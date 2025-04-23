@@ -525,19 +525,84 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Add event delegation for code block buttons
+    document.body.addEventListener('click', (e) => {
+        // Copy button click handler
+        if (e.target.closest('.code-copy-btn')) {
+            const copyBtn = e.target.closest('.code-copy-btn');
+            const codeBlock = copyBtn.closest('.code-block-container').querySelector('code');
+            
+            // Copy the text
+            navigator.clipboard.writeText(codeBlock.textContent)
+                .then(() => {
+                    // Show success feedback
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>`;
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>`;
+                    }, 2000);
+                })
+                .catch(err => console.error('Failed to copy text:', err));
+        }
+        
+        // Collapse button click handler
+        if (e.target.closest('.code-collapse-btn')) {
+            const collapseBtn = e.target.closest('.code-collapse-btn');
+            const codeContainer = collapseBtn.closest('.code-block-container');
+            const preElement = codeContainer.querySelector('pre');
+            
+            // Toggle collapsed state
+            preElement.classList.toggle('collapsed');
+            
+            // Update icon based on state
+            if (preElement.classList.contains('collapsed')) {
+                collapseBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>`;
+            } else {
+                collapseBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>`;
+            }
+        }
+    });
 });
 
 function parseMarkdown(text) {
     if (!text) return '';
     
-    text = text.replace(/```([\s\S]*?)```/g, function(match, code) {
-        return `<pre><code>${escapeHtml(code)}</code></pre>`;
+    // First, capture and temporarily replace code blocks to prevent their contents from being parsed
+    const codeBlocks = [];
+    text = text.replace(/```(\w*)([\s\S]*?)```/g, function(match, language, code) {
+        const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+        codeBlocks.push({
+            language: language,
+            code: code.trim()
+        });
+        return placeholder;
     });
     
-    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Handle inline code (also store and replace)
+    const inlineCodes = [];
+    text = text.replace(/`([^`]+)`/g, function(match, code) {
+        const placeholder = `__INLINE_CODE_${inlineCodes.length}__`;
+        inlineCodes.push(code);
+        return placeholder;
+    });
     
+    // Process other markdown elements
     text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    text = text.replace(/^## (.*$)/gm, '<h2>$1</2>');
+    text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
     text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
     
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -546,6 +611,7 @@ function parseMarkdown(text) {
     
     text = text.replace(/^\> (.+)$/gm, '<blockquote>$1</blockquote>');
     
+    // Handle lists
     let inList = false;
     let listType = null;
     let currentLevel = 0;
@@ -609,8 +675,10 @@ function parseMarkdown(text) {
     
     text = lines.join('\n');
     
+    // Handle links
     text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
     
+    // Paragraphs
     text = text.replace(/\n\s*\n/g, '</p><p>');
     
     if (!text.startsWith('<ul') && !text.startsWith('<ol')) {
@@ -619,6 +687,41 @@ function parseMarkdown(text) {
     
     text = text.replace(/<p><(ul|ol)>/g, '<$1>');
     text = text.replace(/<\/(ul|ol)><\/p>/g, '</$1>');
+    
+    // Now restore code blocks with proper HTML
+    for (let i = 0; i < codeBlocks.length; i++) {
+        const { language, code } = codeBlocks[i];
+        const languageClass = language ? `language-${language}` : '';
+        const languageLabel = language ? `<div class="code-language">${language}</div>` : '';
+        
+        const codeHTML = `
+        <div class="code-block-container">
+            <div class="code-block-header">
+                ${languageLabel}
+                <div class="code-block-actions">
+                    <button class="code-copy-btn" title="Kopírovat kód">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                    <button class="code-collapse-btn" title="Sbalit/rozbalit kód">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <pre class="${languageClass}"><code>${escapeHtml(code)}</code></pre>
+        </div>`;
+        
+        text = text.replace(`__CODE_BLOCK_${i}__`, codeHTML);
+    }
+    
+    // Restore inline code
+    for (let i = 0; i < inlineCodes.length; i++) {
+        text = text.replace(`__INLINE_CODE_${i}__`, `<code class="inline-code">${escapeHtml(inlineCodes[i])}</code>`);
+    }
     
     return text;
 }
