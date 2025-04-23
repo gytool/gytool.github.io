@@ -1,7 +1,7 @@
 // Constants
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 // Load API key from localStorage if available
-let OPENROUTER_API_KEY = '';
+let OPENROUTER_API_KEY = localStorage.getItem('openrouter_api_key') || '';
 // Change default model to more reliable one
 let OPENROUTER_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
 
