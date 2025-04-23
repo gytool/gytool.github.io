@@ -1,97 +1,91 @@
-// Constants
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-// Load API key from localStorage if available
+import { API_URLS, MODELS, DEFAULT_SETTINGS } from './config.js';
+
 let OPENROUTER_API_KEY = localStorage.getItem('openrouter_api_key') || '';
-// Change default model to more reliable one
-let OPENROUTER_MODEL = 'meta-llama/llama-3.3-70b-instruct:free';
+let OPENROUTER_MODEL = localStorage.getItem('openrouter_model') || DEFAULT_SETTINGS.MODEL;
 
 async function sendMessageToOpenRouter(message, signal, onChunk) {
+    if (!OPENROUTER_API_KEY) {
+        throw new Error("Není nastaven API klíč. Nastavte jej v sekci API.");
+    }
+
+    const requestBody = {
+        model: OPENROUTER_MODEL,
+        messages: [
+            { role: 'user', content: message }
+        ],
+        stream: true
+    };
+
     try {
-        if (!OPENROUTER_API_KEY) {
-            throw new Error("API klíč není nastaven. Prosím, zadejte API klíč v nastavení.");
-        }
-        
-        console.log("Sending request to model:", OPENROUTER_MODEL);
-        
-        const requestBody = {
-            model: OPENROUTER_MODEL,
-            messages: [{ role: 'user', content: message }],
-            stream: true
-        };
-        
-        // Add more detailed logging
-        console.log("Request body:", JSON.stringify(requestBody));
-        console.log("Using API key:", OPENROUTER_API_KEY ? "Key is set (not showing for security)" : "No key set");
-        console.log("Sending request to OpenRouter API...");
-        
-        const response = await fetch(OPENROUTER_API_URL, {
+        const response = await fetch(API_URLS.OPENROUTER, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                'HTTP-Referer': window.location.origin
+                'HTTP-Referer': window.location.href,
+                'X-Title': 'HejChat'
             },
             body: JSON.stringify(requestBody),
             signal
         });
 
-        // Improved error handling with specific error message
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`API Error ${response.status}:`, errorText);
-            throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+            throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        if (!response.body) {
+            throw new Error("ReadableStream not supported in this browser.");
         }
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let completeResponse = '';
-        
-        try {
-            while (true) {
-                const { value, done } = await reader.read();
-                
-                if (done) {
-                    console.log("Stream complete");
-                    break;
-                }
-                
-                const chunk = decoder.decode(value, { stream: true });
-                console.log("Received chunk of length:", chunk.length);
-                
-                const lines = chunk.split('\n');
-                
-                for (const line of lines) {
-                    if (!line.trim() || line.includes('[DONE]')) continue;
+        let fullText = '';
+        let thinking = '';
+        let hasThinking = false;
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split("\n");
+            
+            for (const line of lines) {
+                if (line.trim() === "") continue;
+                if (line.trim() === "data: [DONE]") continue;
+
+                try {
+                    const trimmedLine = line.replace(/^data: /, "");
+                    const parsedLine = JSON.parse(trimmedLine);
                     
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const jsonStr = line.substring(6);
-                            const json = JSON.parse(jsonStr);
+                    if (parsedLine.choices && parsedLine.choices.length > 0) {
+                        const content = parsedLine.choices[0].delta?.content || '';
+                        
+                        if (content) {
+                            fullText += content;
                             
-                            const content = json.choices?.[0]?.delta?.content;
-                            if (content) {
-                                completeResponse += content;
-                                console.log("New content:", content);
-                                if (onChunk) {
-                                    onChunk(content, completeResponse);
-                                }
+                            // Check if there's thinking content in antml format
+                            if (parsedLine.choices[0].delta?.thinking) {
+                                hasThinking = true;
+                                thinking += parsedLine.choices[0].delta.thinking;
                             }
-                        } catch (e) {
-                            console.warn("Error parsing chunk:", e);
+                            
+                            onChunk(content, fullText, hasThinking, thinking);
                         }
                     }
+                } catch (e) {
+                    console.error("Error parsing SSE line:", e, line);
                 }
             }
-            
-            return { response: completeResponse };
-        } catch (streamError) {
-            console.error("Stream error:", streamError);
-            if (completeResponse) {
-                return { response: completeResponse };
-            }
-            throw streamError;
         }
+
+        return fullText;
+
     } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Request was aborted');
+            throw error;
+        }
         console.error("API request error:", error);
         throw error;
     }
@@ -242,7 +236,6 @@ function createModelSettingsModal(headerSettings, onSave) {
                     if (document.activeElement !== select || !select.size) {
                         e.preventDefault();
                         OPENROUTER_MODEL = select.value;
-                        // Save model selection to localStorage
                         localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
                         overlay.parentNode.removeChild(overlay);
                     }
@@ -266,7 +259,6 @@ function createModelSettingsModal(headerSettings, onSave) {
                     e.preventDefault();
                     e.stopPropagation();
                     OPENROUTER_MODEL = select.value;
-                    // Save model selection to localStorage
                     localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
                     
                     setTimeout(() => {
@@ -277,20 +269,15 @@ function createModelSettingsModal(headerSettings, onSave) {
                 }
             });
 
-            const models = [
-					{ value: 'meta-llama/llama-3.3-70b-instruct:free', label: 'Meta - Llama 3.3 70B Instruct' },
-					{ value: 'google/gemini-2.5-pro-exp-03-25:free', label: 'Google - Gemini 2.5 Pro Experimental' },
-            ];
-
-            models.forEach(model => {
-                const option = document.createElement('option');
-                option.value = model.value;
-                option.textContent = model.label;
-                if (model.value === OPENROUTER_MODEL) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
+				MODELS.forEach(model => {
+					const option = document.createElement('option');
+					option.value = model.value;
+					option.textContent = model.label;
+					if (model.value === OPENROUTER_MODEL) {
+						 option.selected = true;
+					}
+					select.appendChild(option);
+			  });
 
             selectContainer.appendChild(label);
             selectContainer.appendChild(select);
@@ -315,7 +302,6 @@ function createModelSettingsModal(headerSettings, onSave) {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 OPENROUTER_MODEL = select.value;
-                // Save model selection to localStorage
                 localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
                 if (onSave) {
                     onSave(OPENROUTER_MODEL);
@@ -349,7 +335,6 @@ function getApiKey() {
 
 function setApiKey(key) {
     OPENROUTER_API_KEY = key;
-    // Save to localStorage
     localStorage.setItem('openrouter_api_key', key);
 }
 
@@ -359,13 +344,7 @@ function getModel() {
 
 function setModel(model) {
     OPENROUTER_MODEL = model;
-    // Save to localStorage
     localStorage.setItem('openrouter_model', model);
-}
-
-// Load saved model from localStorage if available
-if (localStorage.getItem('openrouter_model')) {
-    OPENROUTER_MODEL = localStorage.getItem('openrouter_model');
 }
 
 export {

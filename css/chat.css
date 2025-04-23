@@ -1,0 +1,238 @@
+/* Chat interface styles - messages, requests, responses */
+
+.space-request {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	width: 100%;
+	min-height: 40px;
+	margin-top: 1rem;
+}
+
+.space-request-block {
+	display: flex;
+	flex-direction: column;
+	cursor: pointer;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	width: auto;
+	max-width: 75%;
+	height: auto;
+	margin-right: 1rem;
+	margin-left: 0.75rem;
+	word-break: break-word;
+	box-sizing: border-box;
+	overflow-y: visible;
+	overflow-x: visible;
+}
+
+.space-request-block::-webkit-scrollbar {
+	display: none;
+}
+
+.space-request-text {
+	font-size: 1.2rem;
+	padding: 0.75rem;
+	white-space: normal;
+	width: 100%;
+	max-width: 100%;
+	text-align: left;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+	box-sizing: border-box;
+}
+
+.space-copy {
+	width: 1rem;
+	cursor: pointer;
+}
+
+.space-response {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	width: 100%;
+	height: auto;
+}
+
+.space-response-block {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	border: none;
+	border-radius: 10px;
+	width: auto;
+	max-width: 75%;
+	height: auto;
+	margin-left: 1rem;
+	margin-right: 0.75rem;
+	word-break: break-word;
+}
+
+.space-response-text {
+	font-size: 1.2rem;
+	padding: 0 0.75rem;
+	width: 100%;
+	max-width: 100%;
+	text-align: left;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+/* Markdown formatting */
+.space-response-text code {
+  background-color: #f4f4f4;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.space-response-text pre {
+  background-color: #f4f4f4;
+  padding: 0.75rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+
+.space-response-text pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  display: block;
+}
+
+.space-response-text h1, .space-response-text h2, .space-response-text h3 {
+  margin: 1rem 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.space-response-text blockquote {
+  border-left: 3px solid #2B7DB4;
+  padding-left: 0.8rem;
+  margin: 0.5rem 0;
+  color: #555;
+  font-style: italic;
+}
+
+.space-response-text ul, .space-response-text ol {
+  margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
+.space-response-text p {
+  margin: 0.5rem 0;
+}
+
+.space-response-text a {
+  color: #2B7DB4;
+  text-decoration: underline;
+}
+
+.space-response-icons {
+	display: flex;
+	justify-content: space-between;
+	width: 25%;
+	height: 1.8rem;
+	align-items: center;
+	margin-left: 1.75rem;
+	margin-top: -0.5rem;
+	padding: 0.25rem 0;
+}
+
+.space-like {
+	display: block;
+	width: 1rem;
+	height: 1rem;
+	cursor: pointer;
+	margin: 0.25rem 0;
+}
+
+.space-rerun {
+	width: 1rem;
+	height: 1rem;
+	cursor: pointer;
+	margin: 0.25rem 0;
+}
+
+.space-share {
+	width: 1rem;
+	height: 1rem;
+	cursor: pointer;
+	margin: 0.25rem 0;
+}
+
+.space-request-icons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.space-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: auto;
+  z-index: 1;
+  padding: 2rem;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.space-welcome-logo {
+  width: 125px;
+  pointer-events: auto;
+}
+
+.space-welcome-text {
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+  margin-top: -1rem;
+  font-family: "DM Sans", sans-serif;
+  pointer-events: auto;
+}
+
+.welcome-tutorial-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.welcome-tutorial-text {
+  background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 500;
+  pointer-events: auto;
+}
+
+.welcome-tutorial-icon {
+  pointer-events: auto;
+}
+
+.welcome-tutorial-block {
+  transition: transform 0.2s ease;
+}
+
+.welcome-tutorial-block:hover {
+  transform: translateY(-2px);
+}

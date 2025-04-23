@@ -1,0 +1,163 @@
+/* Code blocks and syntax highlighting */
+
+/* Code block styling */
+.code-block-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	border-radius: 8px;
+	overflow: hidden;
+	background-color: #f8f9fa;
+	border: 1px solid #e2e8f0;
+	margin-top: -3rem;
+	margin-bottom: 1rem;
+}
+
+.code-block-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0.5rem 1rem;
+	background: linear-gradient(to right, #013B6C, #2B7DB4);
+	color: white;
+	font-size: 0.875rem;
+}
+
+.code-language {
+	font-weight: 500;
+	font-family: "DM Sans", sans-serif; /* Not monospace for the language label */
+}
+
+.code-block-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.code-block-actions button {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: white;
+	padding: 2px;
+	border-radius: 3px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0.8;
+	transition: opacity 0.2s;
+}
+
+.code-block-actions button:hover {
+	opacity: 1;
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Make sure all code elements use monospace */
+code, pre {
+	font-family: "Courier New", Courier, monospace;
+}
+
+.code-block-container pre {
+	margin: 0;
+	padding: 1rem;
+	overflow-x: auto;
+	transition: max-height 0.3s ease;
+	font-size: 0.9rem;
+	line-height: 1.5;
+	background-color: #f8f9fa; /* Light background for code */
+}
+
+.code-block-container pre.collapsed {
+	max-height: 0;
+	padding: 0 1rem;
+	overflow: hidden;
+}
+
+/* Inline code styling */
+code.inline-code {
+	background-color: #f1f1f4;
+	padding: 0.1rem 0.2rem;
+	border-radius: 3px;
+	font-size: 0.9em;
+	color: #013B6C;
+}
+
+/* Syntax highlighting for code blocks */
+pre.language-javascript .hljs-keyword,
+pre.language-typescript .hljs-keyword,
+pre.language-python .hljs-keyword,
+pre.language-php .hljs-keyword,
+pre.language-sql .hljs-keyword {
+	color: #0066CC; /* Blue for keywords */
+	font-weight: 500;
+}
+
+pre.language-javascript .hljs-string,
+pre.language-typescript .hljs-string,
+pre.language-python .hljs-string,
+pre.language-php .hljs-string {
+	color: #227755; /* Green for strings */
+}
+
+pre.language-javascript .hljs-comment,
+pre.language-typescript .hljs-comment,
+pre.language-css .hljs-comment,
+pre.language-python .hljs-comment,
+pre.language-php .hljs-comment {
+	color: #777777; /* Gray for comments */
+	font-style: italic;
+}
+
+/* Syntax highlighting colors */
+.code-keyword {
+	color: #0066CC; /* Blue for keywords */
+	font-weight: 500;
+}
+
+.code-string {
+	color: #227755; /* Green for strings */
+}
+
+.code-comment {
+	color: #777777; /* Gray for comments */
+	font-style: italic;
+}
+
+.code-number {
+	color: #CC5500; /* Orange for numbers */
+}
+
+.code-literal {
+	color: #CC5500; /* Orange for literals */
+	font-weight: 500;
+}
+
+.code-property {
+	color: #2B7DB4; /* Light blue for CSS properties */
+}
+
+.code-selector {
+	color: #013B6C; /* Dark blue for CSS selectors */
+	font-weight: 500;
+}
+
+.code-tag {
+	color: #0066CC; /* Blue for HTML tags */
+}
+
+.code-attr {
+	color: #2B7DB4; /* Light blue for HTML attributes */
+}
+
+.code-value {
+	color: #227755; /* Green for CSS values */
+}
+
+.code-variable {
+	color: #8A4B08; /* Brown for variables (PHP, etc.) */
+}
+
+.code-key {
+	color: #2B7DB4; /* Light blue for JSON keys */
+	font-weight: 500;
+}
