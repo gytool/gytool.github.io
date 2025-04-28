@@ -37,3 +37,14 @@
 	0%, 100% { transform: scale(0.8); opacity: 0.5; }
 	50% { transform: scale(1.2); opacity: 1; }
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
