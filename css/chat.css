@@ -1,12 +1,12 @@
-/* Chat interface styles - messages, requests, responses */
-
 .space-request {
+	opacity: 0;
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	width: 100%;
 	min-height: 40px;
 	margin-top: 1rem;
+	animation: fadeIn 0.3s ease-out forwards;
 }
 
 .space-request-block {
@@ -46,6 +46,10 @@
 	-ms-hyphens: auto;
 	hyphens: auto;
 	box-sizing: border-box;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .space-copy {
@@ -137,6 +141,7 @@
 }
 
 .space-response-icons {
+	opacity: 0;
 	display: flex;
 	justify-content: space-between;
 	width: 25%;
@@ -145,6 +150,7 @@
 	margin-left: 1.75rem;
 	margin-top: -0.5rem;
 	padding: 0.25rem 0;
+	animation: fadeIn 0.3s ease-out forwards;
 }
 
 .space-like {
@@ -177,43 +183,54 @@
 }
 
 .space-welcome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  height: auto;
-  z-index: 1;
-  padding: 2rem;
-  background-color: transparent;
-  pointer-events: none;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 80%;
+	height: auto;
+	z-index: 1;
+	padding: 2rem;
+	background-color: transparent;
+	pointer-events: none;
 }
 
 .space-welcome-logo {
-  width: 125px;
-  pointer-events: auto;
+	opacity: 0;
+	width: 125px;
+	pointer-events: auto;
+	animation: fadeIn 0.3s ease-out forwards;
 }
 
 .space-welcome-text {
-  font-size: 1.5rem;
-  color: #333;
-  text-align: center;
-  margin-top: -1rem;
-  font-family: "DM Sans", sans-serif;
-  pointer-events: auto;
+	opacity: 0;
+	font-size: 1.5rem;
+	color: #333;
+	text-align: center;
+	margin-top: -1rem;
+	font-family: "DM Sans", sans-serif;
+	pointer-events: auto;
+	animation: fadeIn 0.3s ease-out 0.1s forwards;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .welcome-tutorial-block {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 20px;
-  cursor: pointer;
-  pointer-events: auto;
+	opacity: 0;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 1rem;
+	cursor: pointer;
+	pointer-events: auto;
+	animation: fadeIn 0.3s ease-out 0.2s forwards;
+	transition: transform 0.2s ease;
 }
 
 .welcome-tutorial-text {
@@ -223,16 +240,23 @@
   background-clip: text;
   font-weight: 500;
   pointer-events: auto;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .welcome-tutorial-icon {
   pointer-events: auto;
 }
 
-.welcome-tutorial-block {
-  transition: transform 0.2s ease;
+
+/* @media (hover:hover) {
+	.welcome-tutorial-block:hover {
+		transform: translateY(-20x);
+	}
 }
 
-.welcome-tutorial-block:hover {
-  transform: translateY(-2px);
-}
+.welcome-tutorial-block:active {
+	transform: scale(0.95);
+} */
