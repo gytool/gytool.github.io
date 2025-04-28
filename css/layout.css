@@ -1,5 +1,3 @@
-/* Layout structure - main containers and page organization */
-
 .wrapper {
 	display: flex;
 	flex-direction: column;
@@ -11,17 +9,20 @@
 }
 
 .header {
+	opacity: 0;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
 	height: 10%;
+	animation: fadeIn 0.3s ease-out forwards;
 }
 
 .header-settings {
 	width: 1.2rem;
 	margin-left: 1.9rem;
 	cursor: pointer;
+	transition: all 0.2s ease-in-out;
 }
 
 .header-api {
@@ -33,6 +34,7 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	transition: all 0.2s ease-in-out;
 }
 
 #api-block {
@@ -67,6 +69,8 @@
 	width: 1.2rem;
 	margin-right: 1.9rem;
 	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+
 }
 
 .space {
@@ -89,12 +93,14 @@
 }
 
 .panel {
+	opacity: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	height: 7%;
 	margin-top: 1rem;
 	margin-bottom: 2rem;
+	animation: fadeIn 0.3s ease-out 0.3s forwards;
 }
 
 .panel-input {
@@ -107,6 +113,7 @@
 	align-items: center;
 	border: 1px solid #ccc;
 	border-radius: 25px;
+	transition: all 0.2s ease-in-out;
 }
 
 .panel-input-text {
@@ -131,31 +138,13 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	width: 3rem;
-	height: 3rem;
+	width: 3.3rem;
+	min-height: 3.3rem;
 	background-color: transparent;
 	position: relative;
-	border: none;
+	border: 1px solid #ccc;
 	overflow: hidden;
-}
-
-.panel-send::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0.1px;
-	bottom: 0;
-	border-radius: 50%;
-	padding: 1px; 
-	background: #ccc;
-	-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-	-webkit-mask-composite: xor;
-	-moz-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-	-moz-mask-composite: exclude;
-	mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-	mask-composite: exclude;
-	pointer-events: none;
+	transition: all 0.2s ease-in-out;
 }
 
 .panel-send-icon { 
@@ -166,11 +155,39 @@
 	z-index: 1;
 }
 
-/* For the disabled button state */
 .panel-send:disabled {
   cursor: default;
 }
 
 .panel-send:enabled {
   cursor: pointer;
+}
+
+@media (hover:hover) {
+	.header-settings:hover,
+	.header-api:hover,
+	.header-new:hover {
+		transform: translateY(-2px);
+	}
+
+	.panel-input:hover,
+	.panel-send:hover {
+		border: 1px solid cyan;
+	}
+}
+
+.header-settings:active,
+.header-api:active,
+.header-new:active {
+	transform: scale(0.95);
+}
+
+.panel-input:focus,
+.panel-input:active {
+	border: 1px solid cyan;
+}
+
+.panel-send:active {
+	border: 1px solid cyan;
+	transform: scale(0.95);
 }
