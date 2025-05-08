@@ -20,6 +20,14 @@
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'DM Sans', sans-serif;
+	-webkit-tap-highlight-color: transparent;
+	-moz-tap-highlight-color: transparent;
+	-ms-tap-highlight-color: transparent;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 body {
@@ -92,7 +100,6 @@ p {
 	margin: 0 auto 3rem;
 }
 
-/* Header & Navigation */
 header {
 	background-color: white;
 	position: sticky;
@@ -192,7 +199,6 @@ nav {
 	background-color: var(--primary-dark);
 }
 
-/* Hero Section */
 .hero {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

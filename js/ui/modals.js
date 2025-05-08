@@ -29,19 +29,19 @@ export function showTutorialModal() {
 			  content: 'Nejprve přejděte na web OpenRouter a zaregistrujte se pro vytvoření účtu.',
 			  link: 'https://openrouter.ai/sign-up',
 			  linkText: 'openrouter.ai/sign-up',
-			  image: './img/openrouter_signup.png'
+			  image: './assets/rasters/openrouter_signup.png'
 		 },
 		 {
 			  title: 'Krok 2: Vytvoření API klíče',
 			  content: 'V nastavení vašeho OpenRouter účtu vytvořte nový API klíč.',
 			  link: 'https://openrouter.ai/settings/keys',
 			  linkText: 'openrouter.ai/settings/keys',
-			  image: './img/openrouter_key.png'
+			  image: './assets/rasters/openrouter_key.png'
 		 },
 		 {
 			  title: 'Krok 3: Vložení API klíče do HejChat',
 			  content: 'Zkopírujte vytvořený API klíč a vložte jej do HejChat v sekci API.',
-			  image: './img/hejchat_api.png'
+			  image: './assets/rasters/hejchat_api.png'
 		 }
 	];
 	

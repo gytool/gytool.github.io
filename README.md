@@ -21,17 +21,17 @@ Pro používání HejChat potřebujete API klíč z OpenRouter:
 ### Krok 1: Registrace na OpenRouter
 Nejprve přejděte na web <a href="https://openrouter.ai/sign-up" target="_blank" rel="noopener noreferrer">OpenRouter</a> a zaregistrujte se pro vytvoření účtu.
 
-<img src="./img/openrouter_signup.png" alt="OpenRouter Sign Up" width="400">
+<img src="./assets/rasters/openrouter_signup.png" alt="OpenRouter Sign Up" width="400">
 
 ### Krok 2: Vytvoření API klíče
 V nastavení vašeho OpenRouter účtu vytvořte nový <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer">API klíč</a>.
 
-<img src="./img/openrouter_key.png" alt="OpenRouter API Key" width="400">
+<img src="./assets/rasters/openrouter_key.png" alt="OpenRouter API Key" width="400">
 
 ### Krok 3: Vložení API klíče do HejChat
 Zkopírujte vytvořený API klíč a vložte jej do HejChat v sekci API.
 
-<img src="./img/hejchat_api.png" alt="HejChat API Key" width="400">
+<img src="./assets/rasters/hejchat_api.png" alt="HejChat API Key" width="400">
 
 ## Dostupné modely
 

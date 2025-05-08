@@ -1,12 +1,5 @@
-/**
- * Welcome screen related functions
- */
-
 import { showTutorialModal } from './modals.js';
 
-/**
- * Creates welcome screen element
- */
 export function createWelcomeScreen() {
     const welcomeDiv = document.createElement('div');
     welcomeDiv.classList.add('space-welcome');
@@ -85,9 +78,6 @@ export function createWelcomeScreen() {
     return welcomeDiv;
 }
 
-/**
- * Updates welcome screen visibility
- */
 export function updateWelcomeScreen(messageSpace) {
     if (!messageSpace) return;
 

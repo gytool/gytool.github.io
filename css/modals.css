@@ -314,10 +314,6 @@
     align-items: center;
     cursor: pointer;
     transition: opacity 0.2s ease;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
 }
 
 .tutorial-nav-button:hover {
