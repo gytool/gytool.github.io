@@ -87,6 +87,10 @@
 	padding-top: 1rem;
 }
 
+.space::-webkit-scrollbar {
+	display: none;
+}
+
 .panel {
 	opacity: 0;
 	display: flex;

@@ -102,25 +102,17 @@ export function showTutorialModal() {
 			  
 			  const linkTextSpan = document.createElement('span');
 			  linkTextSpan.textContent = linkText;
-			  
-			  const svgIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-			  svgIcon.classList.add('tutorial-link-icon');
-			  svgIcon.setAttribute('width', '20');
-			  svgIcon.setAttribute('height', '20');
-			  svgIcon.setAttribute('viewBox', '0 0 20 20');
-			  svgIcon.setAttribute('fill', 'none');
-			  svgIcon.innerHTML = `
-					<path d="M10 17.5C14.1421 17.5 17.5 14.1421 17.5 10C17.5 5.85786 14.1421 2.5 10 2.5C5.85786 2.5 2.5 5.85786 2.5 10C2.5 14.1421 5.85786 17.5 10 17.5Z" stroke="currentColor" stroke-width="1.25" stroke-miterlimit="10"></path>
-					<path d="M8.4375 7.97925H12.1875V11.7292" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-					<path d="M7.5 12.875L11.875 8.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-			  `;
+
+			const svgIcon = `
+				<img src="./assets/vectors/link.svg" alt="Link" class="tutorial-link-icon" width="20" height="20">
+			`;
 			  
 			  linkBtn.href = page.link;
 			  linkBtn.target = '_blank';
 			  linkBtn.className = 'tutorial-external-link';
 
 			  linkBtn.appendChild(linkTextSpan);
-			  linkBtn.appendChild(svgIcon);
+			  linkBtn.innerHTML += svgIcon;
 			  
 			  buttonsContainer.appendChild(linkBtn);
 		 }

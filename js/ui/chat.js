@@ -1,9 +1,6 @@
 import { parseMarkdown } from '../utils/markdown.js';
 import { sendMessageToOpenRouter } from '../core/api.js';
 
-/**
- * Creates a request message element
- */
 export function createRequestMessageElement(messageText) {
     const requestDiv = document.createElement('div');
     requestDiv.classList.add('space-request');
@@ -32,21 +29,14 @@ export function createRequestMessageElement(messageText) {
                 .then(() => {
                     console.log('Request text copied to clipboard.');
                     
-                    // Show success feedback with the gradient checkmark
-                    copyIcon.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="space-copy" viewBox="0 0 40 30" fill="none">
-									<path d="M38.7359 1.02394C39.4585 1.70707 39.8803 2.6492 39.9084 3.64319C39.9365 4.63718 39.5688 5.60165 38.8859 6.32455L17.6335 28.8272C17.2891 29.1912 16.8751 29.4825 16.4162 29.6839C15.9573 29.8853 15.4626 29.9926 14.9615 29.9996C14.4604 30.0066 13.963 29.9131 13.4986 29.7246C13.0342 29.5361 12.6123 29.2565 12.2579 28.9022L1.00658 17.6509C0.344099 16.9399 -0.0165588 15.9996 0.000584302 15.0279C0.0177274 14.0563 0.411333 13.1293 1.09848 12.4422C1.78562 11.755 2.71265 11.3614 3.68427 11.3443C4.65589 11.3271 5.59623 11.6878 6.30719 12.3502L14.8332 20.8712L33.4353 1.17396C34.1184 0.451362 35.0606 0.0296347 36.0546 0.00150289C37.0486 -0.0266289 38.013 0.341138 38.7359 1.02394Z" fill="url(#paint0_linear_538_471)"/>
-									<defs>
-										<linearGradient id="paint0_linear_538_471" x1="46.7443" y1="-9.01345" x2="7.52899" y2="11.3658" gradientUnits="userSpaceOnUse">
-											<stop stop-color="#013B6C"/>
-											<stop offset="1" stop-color="#2B7DB4"/>
-										</linearGradient>
-									</defs>
-								</svg>`;
                     
-                    // Revert back to original icon after 2 seconds
+                    copyIcon.src = "./assets/vectors/checkmark.svg";
+                    copyIcon.alt = "Success";
+						  copyIcon.classList.add('space-copy');
+                    
                     setTimeout(() => {
-                        copyIcon.innerHTML = originalHTML;
+							  copyIcon.src = "./assets/vectors/copy.svg";
+							  copyIcon.alt = "Copy";
                     }, 1000);
                 })
                 .catch(err => {
@@ -71,9 +61,6 @@ export function createRequestMessageElement(messageText) {
     return requestDiv;
 }
 
-/**
- * Creates a response message element
- */
 export function createResponseMessageElement(messageText, originalQuery, showIcons = false, thinking = null) {
     const responseDiv = document.createElement('div');
     responseDiv.classList.add('space-response');
@@ -142,21 +129,15 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             .then(() => {
                                 console.log('Response text copied to clipboard.');
                                 
-                                // Show success feedback with the gradient checkmark
-                                copyIcon.innerHTML = `
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="space-copy" viewBox="0 0 40 30" fill="none">
-													<path d="M38.7359 1.02394C39.4585 1.70707 39.8803 2.6492 39.9084 3.64319C39.9365 4.63718 39.5688 5.60165 38.8859 6.32455L17.6335 28.8272C17.2891 29.1912 16.8751 29.4825 16.4162 29.6839C15.9573 29.8853 15.4626 29.9926 14.9615 29.9996C14.4604 30.0066 13.963 29.9131 13.4986 29.7246C13.0342 29.5361 12.6123 29.2565 12.2579 28.9022L1.00658 17.6509C0.344099 16.9399 -0.0165588 15.9996 0.000584302 15.0279C0.0177274 14.0563 0.411333 13.1293 1.09848 12.4422C1.78562 11.755 2.71265 11.3614 3.68427 11.3443C4.65589 11.3271 5.59623 11.6878 6.30719 12.3502L14.8332 20.8712L33.4353 1.17396C34.1184 0.451362 35.0606 0.0296347 36.0546 0.00150289C37.0486 -0.0266289 38.013 0.341138 38.7359 1.02394Z" fill="url(#paint0_linear_538_471)"/>
-													<defs>
-														<linearGradient id="paint0_linear_538_471" x1="46.7443" y1="-9.01345" x2="7.52899" y2="11.3658" gradientUnits="userSpaceOnUse">
-															<stop stop-color="#013B6C"/>
-															<stop offset="1" stop-color="#2B7DB4"/>
-														</linearGradient>
-													</defs>
-												</svg>`;
-
-                                setTimeout(() => {
-                                    copyIcon.innerHTML = originalHTML;
-                                }, 1000);
+                                
+                                copyIcon.src = "./assets/vectors/checkmark.svg";
+										  copyIcon.alt = "Success";
+										  copyIcon.classList.add('space-copy');
+										
+										  setTimeout(() => {
+											  copyIcon.src = "./assets/vectors/copy.svg";
+											  copyIcon.alt = "Copy";
+										}, 1000);
                             })
                             .catch(err => {
                                 console.error('Failed to copy text:', err);
@@ -172,7 +153,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             const parentContainer = responseDiv.parentNode;
                             if (!parentContainer) return;
                             
-                            // Create a temporary response element while we wait for the new response
+                            
                             const tempResponseElement = createResponseMessageElement("", originalQuery, false);
                             const tempResponseTextSpan = tempResponseElement.querySelector('.space-response-text');
                             
@@ -223,7 +204,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 parentContainer.replaceChild(newResponseElement, tempResponseElement);
                                 
                             } catch (error) {
-                                // Remove typing indicator if it exists
+                                
                                 if (typingIndicator && typingIndicator.parentNode) {
                                     typingIndicator.parentNode.removeChild(typingIndicator);
                                 }
@@ -286,15 +267,8 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     const abortController = new AbortController();
 
     sendButton.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 35 35" fill="none">
-            <path d="M0 5C0 2.23858 2.23858 0 5 0H30C32.7614 0 35 2.23858 35 5V30C35 32.7614 32.7614 35 30 35H5C2.23858 35 0 32.7614 0 30V5Z" fill="url(#paint0_linear_392_92)"/>
-            <defs>
-                <linearGradient id="paint0_linear_392_92" x1="40.9937" y1="-10.5157" x2="3.09782" y2="4.28783" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#013B6C"/>
-                    <stop offset="1" stop-color="#2B7DB4"/>
-                </linearGradient>
-            </defs>
-        </svg>`;
+		  <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
+	  `;
     sendButton.disabled = false;
 
     let isAborted = false;

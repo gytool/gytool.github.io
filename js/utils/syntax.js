@@ -62,7 +62,6 @@ export function highlightCodeSyntax(code, language) {
         ]
     };
     
-    // Add aliases for common languages
     const languageAliases = {
         'js': 'javascript',
         'ts': 'typescript',
@@ -74,14 +73,11 @@ export function highlightCodeSyntax(code, language) {
         'less': 'css'
     };
     
-    // Get the patterns for the specified language or its alias
     const languagePatterns = patterns[languageAliases[language] || language];
-    if (!languagePatterns) return escapeHtml(code); // No highlighting for unknown languages
+    if (!languagePatterns) return escapeHtml(code);
     
-    // First escape HTML in the code
     let escapedCode = escapeHtml(code);
     
-    // Apply patterns
     for (const { pattern, class: className, replace } of languagePatterns) {
         if (replace) {
             escapedCode = escapedCode.replace(pattern, replace);
@@ -93,56 +89,41 @@ export function highlightCodeSyntax(code, language) {
     return escapedCode;
 }
 
-/**
- * Setup code block event handlers
- */
 export function setupCodeBlockHandlers() {
     document.body.addEventListener('click', (e) => {
-        // Copy button click handler
         if (e.target.closest('.code-copy-btn')) {
             const copyBtn = e.target.closest('.code-copy-btn');
             const codeBlock = copyBtn.closest('.code-block-container').querySelector('code');
             
-            // Copy the text
             navigator.clipboard.writeText(codeBlock.textContent)
                 .then(() => {
-                    // Show success feedback
                     copyBtn.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>`;
+							<img src="./assets/vectors/white-checkmark.svg" alt="Checkmark"> 
+						  `;
                     
                     setTimeout(() => {
                         copyBtn.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>`;
+                           <img src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
+								`;
                     }, 2000);
                 })
                 .catch(err => console.error('Failed to copy text:', err));
         }
         
-        // Collapse button click handler
         if (e.target.closest('.code-collapse-btn')) {
             const collapseBtn = e.target.closest('.code-collapse-btn');
             const codeContainer = collapseBtn.closest('.code-block-container');
             const preElement = codeContainer.querySelector('pre');
             
-            // Toggle collapsed state
             preElement.classList.toggle('collapsed');
             
-            // Update icon based on state
             if (preElement.classList.contains('collapsed')) {
                 collapseBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                    </svg>`;
+                  <img src="./assets/vectors/hide.svg" alt="Hide"> 
+					`;
             } else {
                 collapseBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>`;
+                  <img src="./assets/vectors/show.svg" alt="Show"> `;
             }
         }
     });

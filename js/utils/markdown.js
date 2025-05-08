@@ -12,7 +12,7 @@ export function escapeHtml(text) {
 export function parseMarkdown(text) {
     if (!text) return '';
     
-    // First, capture and temporarily replace code blocks to prevent their contents from being parsed
+    
     const codeBlocks = [];
     text = text.replace(/```(\w*)([\s\S]*?)```/g, function(match, language, code) {
         const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
@@ -23,7 +23,7 @@ export function parseMarkdown(text) {
         return placeholder;
     });
     
-    // Handle inline code (also store and replace)
+    
     const inlineCodes = [];
     text = text.replace(/`([^`]+)`/g, function(match, code) {
         const placeholder = `__INLINE_CODE_${inlineCodes.length}__`;
@@ -31,7 +31,7 @@ export function parseMarkdown(text) {
         return placeholder;
     });
     
-    // Process other markdown elements
+    
     text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
     text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
     text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
@@ -42,7 +42,7 @@ export function parseMarkdown(text) {
     
     text = text.replace(/^\> (.+)$/gm, '<blockquote>$1</blockquote>');
     
-    // Handle lists
+    
     let inList = false;
     let listType = null;
     let currentLevel = 0;
@@ -106,10 +106,10 @@ export function parseMarkdown(text) {
     
     text = lines.join('\n');
     
-    // Handle links
+    
     text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
     
-    // Paragraphs
+    
     text = text.replace(/\n\s*\n/g, '</p><p>');
     
     if (!text.startsWith('<ul') && !text.startsWith('<ol')) {
@@ -119,13 +119,13 @@ export function parseMarkdown(text) {
     text = text.replace(/<p><(ul|ol)>/g, '<$1>');
     text = text.replace(/<\/(ul|ol)><\/p>/g, '</$1>');
     
-    // Now restore code blocks with proper HTML and syntax highlighting
+    
     for (let i = 0; i < codeBlocks.length; i++) {
         const { language, code } = codeBlocks[i];
         const languageClass = language ? `language-${language}` : '';
         const languageLabel = language ? `<div class="code-language">${language}</div>` : '';
         
-        // Apply syntax highlighting to code
+        
         const highlightedCode = highlightCodeSyntax(code, language);
         
         const codeHTML = `
@@ -134,15 +134,10 @@ export function parseMarkdown(text) {
                 ${languageLabel}
                 <div class="code-block-actions">
                     <button class="code-copy-btn" title="Kopírovat kód">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                        </svg>
+                        <img src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
                     </button>
                     <button class="code-collapse-btn" title="Sbalit/rozbalit kód">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
+                        <img src="./assets/vectors/show.svg" alt="Show">
                     </button>
                 </div>
             </div>
@@ -152,7 +147,7 @@ export function parseMarkdown(text) {
         text = text.replace(`__CODE_BLOCK_${i}__`, codeHTML);
     }
     
-    // Restore inline code
+    
     for (let i = 0; i < inlineCodes.length; i++) {
         text = text.replace(`__INLINE_CODE_${i}__`, `<code class="inline-code">${escapeHtml(inlineCodes[i])}</code>`);
     }
