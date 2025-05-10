@@ -104,12 +104,13 @@
 .panel-input {
 	display: flex;
 	justify-content: left;
-	margin-right: 0.9rem;
-	width: 75%;
+	margin: 0 0.9rem;
+	width: 60%;
 	height: 50px;
 	display: flex;
 	align-items: center;
 	border: 1px solid #ccc;
+	caret-color: #ccc;
 	border-radius: 25px;
 	transition: all 0.2s ease-in-out;
 }
@@ -135,7 +136,7 @@
 	outline: none;
 }
 
-.panel-send {
+.panel-block {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -153,13 +154,20 @@
 	user-select: none;
 }
 
-.panel-send-icon { 
+.panel-send { 
 	width: 1rem;
 	cursor: pointer;
 	padding: 1rem;
-	position: relative;
-	z-index: 1;
+	transition: all 0.2s ease-in-out;
 }
+
+.panel-more { 
+	width: 2rem;
+	cursor: pointer;
+	padding: 1rem;
+	transition: all 0.2s ease-in-out;
+}
+
 
 .panel-send:disabled {
   cursor: default;
@@ -177,8 +185,13 @@
 	}
 
 	.panel-input:hover,
-	.panel-send:hover {
+	.panel-block:hover {
 		border: 1px solid #2B7DB4;
+	}
+
+	.panel-send:hover,
+	.panel-more:hover {
+		transform: scale(1.1);
 	}
 }
 
@@ -193,7 +206,7 @@
 	border: 1px solid #013B6C;
 }
 
-.panel-send:active {
+.panel-block:active {
 	border: 1px solid #013B6C;
 	transform: scale(0.95);
 }

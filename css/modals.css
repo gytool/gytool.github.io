@@ -99,19 +99,20 @@
 }
 
 .api-toggle-icon {
-  position: absolute;
-  top: 50%;
-  right: 0.75rem;
-  transform: translateY(-50%);
-  cursor: pointer;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  pointer-events: auto;
-  transition: all 0.2s ease;
+	opacity: 0;
+	position: absolute;
+	top: 25%;
+	right: 0.75rem;
+	cursor: pointer;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	pointer-events: auto;
+	transition: all 0.2s ease;
+	animation: fadeIn 0.3s ease-out 0.1s forwards;
 }
 
 .api-button {
@@ -326,7 +327,7 @@
 
 @media (hover:hover) {
    .api-input:hover {
-      border: 1px solid cyan;
+      border: 1px solid #2B7DB4;
    }
 
    .api-save-button:hover {
@@ -346,7 +347,7 @@
 
 .api-input:focus,
 .api-input:active {
-   border: 1px solid cyan;
+   border: 1px solid #013B6C;
 }
 
 .api-close-button:active {
