@@ -37,10 +37,10 @@ Zkopírujte vytvořený API klíč a vložte jej do HejChat v sekci API.
 
 HejChat podporuje nejlepší bezplatné jazykové modely.
 
-- Meta - Llama 3.3 70B
-- Google - Gemini 2.5 Pro Experimental
-- Mistral - Small 3.1 24B
-- DeepSeek - V3 Base
+- Gemini
+- DeepSeek
+- Llama
+- Qwen
 
 ## Jak používat
 
