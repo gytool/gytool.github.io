@@ -9,12 +9,14 @@
 }
 
 .header {
+	width: 95%;
 	opacity: 0;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	animation: fadeIn 0.3s ease-out forwards;
-	margin-top: 3rem;
+	margin: 0 auto;
+	margin-top: 2rem;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
