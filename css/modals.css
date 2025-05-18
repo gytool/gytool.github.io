@@ -60,16 +60,21 @@
 }
 
 .settings-select {
-   opacity: 0;
-   padding: 0.75rem;
-   border: 1px solid #ccc;
-   border-radius: 5px;
-   font-size: 1.1rem;
-   outline: none;
-   font-family: "DM Sans", sans-serif;
-   width: 100%;
-   background-color: white;
-   animation: fadeIn 0.3s ease-out 0.1s forwards;
+	opacity: 0;
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 1.1rem;
+	outline: none;
+	font-family: "DM Sans", sans-serif;
+	width: 100%;
+	background-color: white;
+	animation: fadeIn 0.3s ease-out 0.1s forwards;
+}
+
+.settings-select option:checked {
+	background-color: #2B7DB4;
+	color: white;
 }
 
 #api-form {
@@ -137,46 +142,45 @@
 }
 
 .api-close-button {
-   opacity: 0;
-   background: none;
-   border: 1px solid gray;
-   -webkit-user-select: none;
-   -moz-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
-   animation: fadeIn 0.3s ease-out 0.3s forwards;
-   transition: all 0.2s ease;
+	opacity: 0;
+	background: none;
+	border: 1px solid gray;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	animation: fadeIn 0.3s ease-out 0.3s forwards;
+	transition: all 0.2s ease;
 }
 
 .api-info-text {
-   opacity: 0;
-   text-align: center;
-   margin-top: 1rem;
-   font-size: 1rem;
-   color: #333;
-   cursor: pointer;
-   -webkit-user-select: none;
-   -moz-user-select: none;
-   -ms-user-select: none;
-   user-select: none;
-   animation: fadeIn 0.3s ease-out 0.4s forwards;
+	opacity: 0;
+	text-align: center;
+	margin-top: 1rem;
+	font-size: 1rem;
+	color: #333;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	animation: fadeIn 0.3s ease-out 0.4s forwards;
 }
 
-/* Tutorial modal */
 #tutorial-modal {
-   position: absolute;
-   width: 90%;
-   height: 60%;
-   max-width: 350px;
-   max-height: 90%;
-   left: 50%;
-   top: 50%;
-   transform: translate(-50%, -50%);
-   background-color: white;
-   border-radius: 10px;
-   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-   padding: 25px;
-   overflow: hidden;
+	position: absolute;
+	width: 90%;
+	height: 60%;
+	max-width: 350px;
+	max-height: 90%;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	padding: 25px;
+	overflow: hidden;
 }
 
 .tutorial-close-button {

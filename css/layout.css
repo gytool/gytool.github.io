@@ -23,7 +23,7 @@
 	user-select: none;
 }
 
-.header-settings {
+.header-menu {
 	width: 1.2rem;
 	margin-left: 1.9rem;
 	cursor: pointer;
@@ -118,10 +118,6 @@
 
 .panel-input::placeholder {
 	color: #ccc;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 .panel-input-text:focus {

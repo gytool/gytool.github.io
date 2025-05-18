@@ -1,4 +1,5 @@
 import { API_URLS, MODELS, DEFAULT_SETTINGS } from './config.js';
+import { showTutorialModal } from '../ui/modals.js';
 
 let OPENROUTER_API_KEY = localStorage.getItem('openrouter_api_key') || '';
 let OPENROUTER_MODEL = localStorage.getItem('openrouter_model') || DEFAULT_SETTINGS.MODEL;
@@ -188,6 +189,14 @@ function createApiKeyModal(headerApi, onSave) {
             const infoText = document.createElement('p');
             infoText.textContent = "Sledujte náš užitečný API návod.";
             infoText.className = 'api-info-text';
+            
+            infoText.addEventListener('click', () => {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                showTutorialModal();
+            });
+            
             apiBlock.appendChild(infoText);
 
             overlay.appendChild(apiBlock);
@@ -314,6 +323,14 @@ function createModelSettingsModal(headerSettings, onSave) {
             const infoText = document.createElement('p');
             infoText.textContent = "Vyberte model pro generování odpovědí.";
             infoText.className = 'api-info-text';
+            
+            infoText.addEventListener('click', () => {
+                if (overlay.parentNode) {
+                    overlay.parentNode.removeChild(overlay);
+                }
+                showTutorialModal();
+            });
+            
             settingsBlock.appendChild(infoText);
 
             overlay.appendChild(settingsBlock);

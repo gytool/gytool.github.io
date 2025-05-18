@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
 	const sendButton = document.querySelector('.panel-send');
 	const headerNew = document.querySelector('.header-new');
 	const headerApi = document.querySelector('.header-api');
-	const headerSettings = document.querySelector('.header-settings');
+	const headerMenu = document.querySelector('.header-menu');
 
 	if (!chatForm) {
 		 return;
 	}
 
 	createApiKeyModal(headerApi);
-	createModelSettingsModal(headerSettings);
+	createModelSettingsModal(headerMenu);
 	updateWelcomeScreen(messageSpace);
 	setupCodeBlockHandlers();
 	

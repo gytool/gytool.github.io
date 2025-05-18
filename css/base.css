@@ -13,13 +13,22 @@ body {
 	font-weight: 400;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	height: calc(100vh - var(--tg-safe-area-inset-top, 0px) - var(--tg-safe-area-inset-bottom, 0px));
-	padding-top: var(--tg-safe-area-inset-top, 0px);
-	padding-bottom: var(--tg-safe-area-inset-bottom, 0px);
 }
 
 #root {
 	max-width: 100vw;
 	max-height: 100vh;
 	background-image: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+}
+
+::selection {
+	background-color: inherit;
+	color: inherit;
+	text-decoration: underline #2B7DB4;
+}
+
+::-moz-selection {
+	background-color: inherit;
+	color: inherit;
+	text-decoration: underline #2B7DB4;
 }

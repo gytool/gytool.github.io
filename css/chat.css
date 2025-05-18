@@ -248,23 +248,8 @@
   background-clip: text;
   font-weight: 500;
   pointer-events: auto;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
 
 .welcome-tutorial-icon {
   pointer-events: auto;
 }
-
-
-/* @media (hover:hover) {
-	.welcome-tutorial-block:hover {
-		transform: translateY(-20x);
-	}
-}
-
-.welcome-tutorial-block:active {
-	transform: scale(0.95);
-} */
