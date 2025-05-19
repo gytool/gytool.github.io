@@ -27,36 +27,45 @@ import {
 	setupCodeBlockHandlers
 } from './utils/syntax.js';
 
+import { clearHistory } from './core/history.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 	const chatForm = document.getElementById('chat-form');
 	const chatInput = document.getElementById('chat-input');
 	const messageSpace = document.getElementById('message-space');
-	const sendButton = document.querySelector('.panel-send');
+	const sendButton = document.querySelector('.panel-block[type="submit"]');
 	const headerNew = document.querySelector('.header-new');
 	const headerApi = document.querySelector('.header-api');
-	const headerMenu = document.querySelector('.header-menu');
+	const headerModel = document.querySelector('.header-model');
 
 	if (!chatForm) {
 		 return;
 	}
 
 	createApiKeyModal(headerApi);
-	createModelSettingsModal(headerMenu);
+	createModelSettingsModal(headerModel);
 	updateWelcomeScreen(messageSpace);
 	setupCodeBlockHandlers();
 	
-	const originalSendHTML = sendButton?.innerHTML || '';
+	const voiceIconHTML = `<img src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+	const sendIconHTML = `<img src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
 	
 	chatForm.addEventListener('submit', async (event) => {
 		 event.preventDefault();
-		 await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, originalSendHTML);
+		 await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
 	});
 
 	if (chatInput && sendButton) {
 		 chatInput.addEventListener('input', () => {
-			  sendButton.disabled = chatInput.value.trim() === '';
+			  const isEmpty = chatInput.value.trim() === '';
+			  sendButton.disabled = isEmpty;
+			  sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
 		 });
-		 sendButton.disabled = chatInput.value.trim() === '';
+		 
+		 // Set initial icon state on page load
+		 const isEmpty = chatInput.value.trim() === '';
+		 sendButton.disabled = isEmpty;
+		 sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
 	}
 
 	if (chatInput) {
@@ -79,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			  while (messageSpace.firstChild) {
 					messageSpace.removeChild(messageSpace.firstChild);
 			  }
+			  
+			  // Clear conversation history when starting a new chat
+			  clearHistory();
 			  
 			  updateWelcomeScreen(messageSpace);
 

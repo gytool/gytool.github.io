@@ -9,7 +9,7 @@
 }
 
 .header {
-	width: 95%;
+	width: calc(100% - 0.5rem);
 	opacity: 0;
 	display: flex;
 	align-items: center;
@@ -23,7 +23,7 @@
 	user-select: none;
 }
 
-.header-menu {
+.header-history {
 	width: 1.2rem;
 	margin-left: 1.9rem;
 	cursor: pointer;
@@ -31,6 +31,14 @@
 }
 
 .header-api {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: all 0.2s ease-in-out;
+}
+
+.header-model {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -78,7 +86,7 @@
 	display: flex;
 	flex-direction: column;
 	border-radius: 25px;
-	width: 95%;
+	width: calc(100% - 2rem);
 	height: 71%;
 	margin: 0 auto;
 	overflow-y: auto;
@@ -130,7 +138,7 @@
 	justify-content: center;
 	border-radius: 50%;
 	width: 3.3rem;
-	min-height: 3.3rem;
+	height: 3.3rem;
 	background-color: transparent;
 	position: relative;
 	border: 1px solid #ccc;
@@ -142,7 +150,8 @@
 	user-select: none;
 }
 
-.panel-send { 
+.panel-send {
+	position: relative;
 	width: 1rem;
 	cursor: pointer;
 	padding: 1rem;
@@ -168,7 +177,9 @@
 @media (hover:hover) {
 	.header-settings:hover,
 	.header-api:hover,
-	.header-new:hover {
+	.header-new:hover,
+	.header-model:hover,
+	.header-history:hover {
 		transform: translateY(-2px);
 	}
 
@@ -185,7 +196,9 @@
 
 .header-settings:active,
 .header-api:active,
-.header-new:active {
+.header-new:active,
+.header-model:active,
+.header-history:active {
 	transform: scale(0.95);
 }
 

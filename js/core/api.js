@@ -1,19 +1,30 @@
-import { API_URLS, MODELS, DEFAULT_SETTINGS } from './config.js';
+import { API_URLS, MODELS, DEFAULT_SETTINGS, SYSTEM_PROMPT } from './config.js';
 import { showTutorialModal } from '../ui/modals.js';
 
 let OPENROUTER_API_KEY = localStorage.getItem('openrouter_api_key') || '';
 let OPENROUTER_MODEL = localStorage.getItem('openrouter_model') || DEFAULT_SETTINGS.MODEL;
 
-async function sendMessageToOpenRouter(message, signal, onChunk) {
+async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
     if (!OPENROUTER_API_KEY) {
         throw new Error("Není nastaven API klíč. Nastavte jej v sekci API.");
     }
 
+    // Handle custom model prefix
+    let modelToUse = OPENROUTER_MODEL;
+    if (modelToUse.startsWith('custom:')) {
+        modelToUse = modelToUse.substring(7); // Remove 'custom:' prefix
+    }
+
+    const messages = [
+        { role: 'system', content: SYSTEM_PROMPT }
+    ];
+
+    messages.push(...history);
+    messages.push({ role: 'user', content: message });
+
     const requestBody = {
-        model: OPENROUTER_MODEL,
-        messages: [
-            { role: 'user', content: message }
-        ],
+        model: modelToUse,
+        messages: messages,
         stream: true
     };
 
@@ -244,20 +255,66 @@ function createModelSettingsModal(headerSettings, onSave) {
                     const select = document.getElementById('model-select');
                     if (document.activeElement !== select || !select.size) {
                         e.preventDefault();
-                        OPENROUTER_MODEL = select.value;
-                        localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
+                        saveModelSettings();
                         overlay.parentNode.removeChild(overlay);
                     }
                 }
             });
 
+            // Create toggle buttons for selection method
+            const toggleContainer = document.createElement('div');
+            toggleContainer.className = 'select-toggle-container';
+            
+            const presetToggle = document.createElement('button');
+            presetToggle.type = 'button';
+            presetToggle.textContent = 'Z nabídky';
+            presetToggle.className = 'toggle-button';
+            presetToggle.id = 'preset-toggle';
+            
+            const customToggle = document.createElement('button');
+            customToggle.type = 'button';
+            customToggle.textContent = 'Vlastní model';
+            customToggle.className = 'toggle-button';
+            customToggle.id = 'custom-toggle';
+            
+            // Check if we're using a custom model
+            const isCustomModel = OPENROUTER_MODEL.startsWith('custom:');
+            
+            // Set initial active state
+            if (!isCustomModel) {
+                presetToggle.classList.add('active');
+            } else {
+                customToggle.classList.add('active');
+            }
+            
+            toggleContainer.appendChild(presetToggle);
+            toggleContainer.appendChild(customToggle);
+            form.appendChild(toggleContainer);
+
+            // Create container for dropdown selection
             const selectContainer = document.createElement('div');
             selectContainer.className = 'settings-select-container';
+            selectContainer.id = 'preset-container';
+            
+            // Create container for custom model input
+            const customContainer = document.createElement('div');
+            customContainer.className = 'settings-select-container';
+            customContainer.id = 'custom-container';
+            
+            // Set initial visibility
+            if (isCustomModel) {
+                selectContainer.style.display = 'none';
+                customContainer.style.display = 'block';
+            } else {
+                selectContainer.style.display = 'block';
+                customContainer.style.display = 'none';
+            }
 
-            const label = document.createElement('label');
-            label.textContent = 'Model:';
-            label.htmlFor = 'model-select';
-            label.className = 'settings-label';
+            // Dropdown components
+            const selectLabel = document.createElement('label');
+            selectLabel.textContent = 'Model:';
+            selectLabel.htmlFor = 'model-select';
+            selectLabel.className = 'settings-label';
 
             const select = document.createElement('select');
             select.id = 'model-select';
@@ -267,8 +324,7 @@ function createModelSettingsModal(headerSettings, onSave) {
                 if (e.key === 'Enter' && !select.size) {
                     e.preventDefault();
                     e.stopPropagation();
-                    OPENROUTER_MODEL = select.value;
-                    localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
+                    saveModelSettings();
                     
                     setTimeout(() => {
                         if (overlay.parentNode) {
@@ -278,19 +334,60 @@ function createModelSettingsModal(headerSettings, onSave) {
                 }
             });
 
-				MODELS.forEach(model => {
-					const option = document.createElement('option');
-					option.value = model.value;
-					option.textContent = model.label;
-					if (model.value === OPENROUTER_MODEL) {
-						 option.selected = true;
-					}
-					select.appendChild(option);
-			  });
+            MODELS.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.value;
+                option.textContent = model.label;
+                if (model.value === OPENROUTER_MODEL) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
 
-            selectContainer.appendChild(label);
+            selectContainer.appendChild(selectLabel);
             selectContainer.appendChild(select);
+            
+            // Custom model input components
+            const customLabel = document.createElement('label');
+            customLabel.textContent = 'Vlastní model:';
+            customLabel.htmlFor = 'custom-model-input';
+            customLabel.className = 'settings-label';
+
+            const customInputContainer = document.createElement('div');
+            customInputContainer.className = 'api-input-container';
+
+            const customInput = document.createElement('input');
+            customInput.type = 'text';
+            customInput.id = 'custom-model-input';
+            customInput.className = 'api-input';
+            customInput.placeholder = 'např. openai/gpt-4o';
+            
+            // Set value if it's a custom model
+            if (isCustomModel) {
+                customInput.value = OPENROUTER_MODEL.substring(7); // Remove 'custom:' prefix
+            }
+            
+            customInputContainer.appendChild(customInput);
+            customContainer.appendChild(customLabel);
+            customContainer.appendChild(customInputContainer);
+            
             form.appendChild(selectContainer);
+            form.appendChild(customContainer);
+            
+            // Toggle button event listeners
+            presetToggle.addEventListener('click', () => {
+                presetToggle.classList.add('active');
+                customToggle.classList.remove('active');
+                selectContainer.style.display = 'block';
+                customContainer.style.display = 'none';
+            });
+            
+            customToggle.addEventListener('click', () => {
+                customToggle.classList.add('active');
+                presetToggle.classList.remove('active');
+                customContainer.style.display = 'block';
+                selectContainer.style.display = 'none';
+            });
 
             const saveButton = document.createElement('button');
             saveButton.type = 'submit';
@@ -308,18 +405,35 @@ function createModelSettingsModal(headerSettings, onSave) {
             form.appendChild(saveButton);
             form.appendChild(closeButton);
 
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                OPENROUTER_MODEL = select.value;
+            // Function to save model settings
+            function saveModelSettings() {
+                if (presetToggle.classList.contains('active')) {
+                    // Save from dropdown
+                    OPENROUTER_MODEL = select.value;
+                } else {
+                    // Save custom model with prefix
+                    const customModelValue = customInput.value.trim();
+                    if (customModelValue) {
+                        OPENROUTER_MODEL = 'custom:' + customModelValue;
+                    } else {
+                        // Fallback to default if empty
+                        OPENROUTER_MODEL = DEFAULT_SETTINGS.MODEL;
+                    }
+                }
+                
                 localStorage.setItem('openrouter_model', OPENROUTER_MODEL);
                 if (onSave) {
                     onSave(OPENROUTER_MODEL);
                 }
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveModelSettings();
                 overlay.parentNode.removeChild(overlay);
             });
 
-            settingsBlock.appendChild(form);
-
+            // Info text
             const infoText = document.createElement('p');
             infoText.textContent = "Vyberte model pro generování odpovědí.";
             infoText.className = 'api-info-text';
@@ -331,8 +445,8 @@ function createModelSettingsModal(headerSettings, onSave) {
                 showTutorialModal();
             });
             
+            settingsBlock.appendChild(form);
             settingsBlock.appendChild(infoText);
-
             overlay.appendChild(settingsBlock);
 
             overlay.addEventListener('click', (event) => {

@@ -1,5 +1,6 @@
 import { parseMarkdown } from '../utils/markdown.js';
 import { sendMessageToOpenRouter } from '../core/api.js';
+import { addToHistory, getHistory, clearHistory } from '../core/history.js';
 
 export function createRequestMessageElement(messageText) {
     const requestDiv = document.createElement('div');
@@ -150,12 +151,47 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                     rerunIcon.addEventListener('click', async () => {
                         const originalQuery = responseDiv.dataset.originalQuery;
                         if (originalQuery) {
+                            // Get the parent message container and find its position in the conversation
                             const parentContainer = responseDiv.parentNode;
                             if (!parentContainer) return;
                             
+                            // Find all subsequent message containers and remove them
+                            let currentElement = parentContainer.nextElementSibling;
+                            while (currentElement) {
+                                const nextElement = currentElement.nextElementSibling;
+                                currentElement.remove();
+                                currentElement = nextElement;
+                            }
                             
-                            const tempResponseElement = createResponseMessageElement("", originalQuery, false);
+                            // Trim the conversation history to this point
+                            // First, find the index of this container among all message containers
+                            const allContainers = Array.from(document.querySelectorAll('.message-container'));
+                            const currentIndex = allContainers.indexOf(parentContainer);
+                            
+                            // Adjust the history - we need to keep user and assistant messages up to this point
+                            // Calculate how many pairs of messages to keep (each pair is user + assistant)
+                            const historyPairsToKeep = Math.floor((currentIndex + 1) / 2);
+                            const historyItemsToKeep = historyPairsToKeep * 2; // User message + assistant response
+                            
+                            // Get current history and trim it
+                            const currentHistory = getHistory();
+                            if (currentHistory.length > historyItemsToKeep) {
+                                // Create a new history array with only the items we want to keep
+                                const trimmedHistory = currentHistory.slice(0, historyItemsToKeep);
+                                
+                                // Clear history and rebuild it with our trimmed version
+                                clearHistory();
+                                trimmedHistory.forEach(item => {
+                                    addToHistory(item.role, item.content);
+                                });
+                            }
+                            
+                            // Create a temporary response element for showing the loading state
+                            const tempResponseElement = createResponseMessageElement(" ", originalQuery, false);
                             const tempResponseTextSpan = tempResponseElement.querySelector('.space-response-text');
+                            
+                            // Clear any existing content first
+                            tempResponseTextSpan.innerHTML = '';
                             
                             const typingIndicator = document.createElement('span');
                             typingIndicator.className = 'typing-indicator';
@@ -170,6 +206,9 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 let hasThinkingContent = false;
                                 
                                 const abortController = new AbortController();
+                                
+                                // Get conversation history for rerun
+                                const conversationHistory = getHistory();
                                 
                                 const result = await sendMessageToOpenRouter(
                                     originalQuery, 
@@ -191,7 +230,8 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                         if (messageSpace) {
                                             messageSpace.scrollTop = messageSpace.scrollHeight;
                                         }
-                                    }
+                                    },
+                                    conversationHistory
                                 );
                                 
                                 const newResponseElement = createResponseMessageElement(
@@ -264,11 +304,14 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     messageSpace.appendChild(messageContainer);
     messageSpace.scrollTop = messageSpace.scrollHeight;
 
+    // Add user message to conversation history
+    addToHistory('user', userMessage);
+
     const abortController = new AbortController();
 
     sendButton.innerHTML = `
-		  <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
-	  `;
+        <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
+    `;
     sendButton.disabled = false;
 
     let isAborted = false;
@@ -293,6 +336,11 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
             );
             messageContainer.removeChild(responseElement);
             messageContainer.appendChild(newResponseElement);
+            
+            // Add partial response to history if aborted
+            if (rawMarkdownContent) {
+                addToHistory('assistant', rawMarkdownContent);
+            }
         }
         
         sendButton.innerHTML = originalSendHTML;
@@ -307,7 +355,12 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         let currentThinking = '';
         let hasThinkingContent = false;
         
-        await sendMessageToOpenRouter(userMessage, abortController.signal, 
+        // Get current conversation history
+        const conversationHistory = getHistory();
+        
+        await sendMessageToOpenRouter(
+            userMessage, 
+            abortController.signal, 
             (chunk, fullText, hasThinking, thinkingText) => {
                 if (typingIndicator && typingIndicator.parentNode) {
                     typingIndicator.parentNode.removeChild(typingIndicator);
@@ -325,7 +378,8 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
                 }
                 
                 messageSpace.scrollTop = messageSpace.scrollHeight;
-            }
+            },
+            conversationHistory // Pass the conversation history
         );
         
         console.log("Creating final response with length:", rawMarkdownContent.length);
@@ -338,6 +392,9 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         
         messageContainer.removeChild(responseElement);
         messageContainer.appendChild(newResponseElement);
+        
+        // Add assistant's response to conversation history
+        addToHistory('assistant', rawMarkdownContent);
         
     } catch (error) {
         if (error.name !== 'AbortError') {

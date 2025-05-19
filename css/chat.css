@@ -78,7 +78,7 @@
 	width: auto;
 	max-width: 75%;
 	height: auto;
-	margin-left: 1rem;
+	margin-left: 0.5rem;
 	margin-right: 0.75rem;
 	word-break: break-word;
 }
@@ -151,7 +151,7 @@
 	width: 25%;
 	height: 1.8rem;
 	align-items: center;
-	margin-left: 1.75rem;
+	margin-left: 1.25rem;
 	margin-top: -0.5rem;
 	padding: 0.25rem 0;
 	animation: fadeIn 0.3s ease-out forwards;
