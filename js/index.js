@@ -94,12 +94,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (headerNew && messageSpace) {
 		 headerNew.addEventListener('click', () => {
+			  // Clear message space
 			  while (messageSpace.firstChild) {
 					messageSpace.removeChild(messageSpace.firstChild);
 			  }
 			  
+			  // Clear history
 			  clearHistory();
 			  
+			  // Clear any pending file uploads
+			  window.pendingUploads = [];
+			  
+			  // Close the upload preview if it's open
+			  const uploadedContainer = document.querySelector('.uploaded-container');
+			  if (uploadedContainer) {
+					uploadedContainer.classList.remove('active');
+					setTimeout(() => {
+						 if (uploadedContainer.parentNode) {
+							  uploadedContainer.parentNode.removeChild(uploadedContainer);
+						 }
+					}, 200);
+			  }
+			  
+			  // Update welcome screen
 			  updateWelcomeScreen(messageSpace);
 
 			  if (chatInput) {
@@ -109,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			  if (sendButton) {
 					sendButton.disabled = true;
+					sendButton.innerHTML = `<img src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
 			  }
 		 });
 	}
@@ -331,9 +349,6 @@ function setupPlusMenu(plusButton) {
 			const plusRect = plusButton.getBoundingClientRect();
 			uploadedContainer.style.left = `${plusRect.left}px`;
 			uploadedContainer.style.bottom = `${window.innerHeight - plusRect.top + 10}px`;
-			
-			// Add close listener
-			document.addEventListener('click', closeUploadPreviewOutside);
 		}
 		
 		const filesContainer = uploadedContainer.querySelector('.files-container');
@@ -421,16 +436,11 @@ function setupPlusMenu(plusButton) {
 		function closeUploadPreview() {
 			uploadedContainer.classList.remove('active');
 			setTimeout(() => {
-				document.body.removeChild(uploadedContainer);
+				if (document.body.contains(uploadedContainer)) {
+					document.body.removeChild(uploadedContainer);
+				}
 				// Don't clear uploads when closing - they remain pending until sent or canceled
 			}, 200);
-			document.removeEventListener('click', closeUploadPreviewOutside);
-		}
-		
-		function closeUploadPreviewOutside(e) {
-			if (!uploadedContainer.contains(e.target) && e.target !== plusButton) {
-				closeUploadPreview();
-			}
 		}
 	}
 }

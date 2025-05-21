@@ -391,3 +391,179 @@
 	border: 1px solid #013B6C;
 	transform: scale(0.95);
 }
+
+/* Add these styles at the end of your CSS file */
+
+/* File display in chat styling */
+.file-image-grid {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.file-image-grid.grid-1 {
+    grid-template-columns: 1fr;
+}
+
+.file-image-grid.grid-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.file-image-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.file-image-grid.grid-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.file-image-container {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+
+.file-chat-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.file-more-indicator {
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-more-indicator span {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.file-document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.file-document-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.file-document-item:hover {
+    background-color: #f0f0f0;
+}
+
+.file-document-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+}
+
+.file-document-details {
+    flex: 1;
+}
+
+.file-document-name {
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 2px;
+    word-break: break-all;
+}
+
+.file-document-size {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* If images and documents are both present, add separation */
+.file-image-grid + .file-document-list {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+/* Add these styles at the end */
+
+/* Attachment icon in chat */
+.space-request-attachment-icon {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    top: 12px; /* Align with the request block */
+    transition: transform 0.2s ease;
+}
+
+.space-request-attachment-icon:hover {
+    transform: scale(1.1);
+}
+
+/* For positioning the message with the attachment icon */
+.space-request-with-attachment {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding-left: 30px; /* Make room for the icon */
+}
+
+/* File popup that appears when clicking the attachment icon */
+.file-popup {
+    position: absolute;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    z-index: 100;
+    max-width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+}
+
+.file-popup.active {
+    display: block;
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.file-popup-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.file-popup-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.file-popup-close {
+    cursor: pointer;
+    color: #888;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.file-popup-close:hover {
+    color: #333;
+}

@@ -79,7 +79,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
     if (messageText && messageText.trim() !== '') {
         responseTextSpan.innerHTML = parseMarkdown(messageText);
     } else {
-        responseTextSpan.innerHTML = '<p>Promiň, teď tvůj požadavek nejde zpracovat. Zkus to prosím znovu.</p>';
+        responseTextSpan.innerHTML = '<p>Odpověď byla přerušena. Neváhej se zeptat znovu.</p>';
         responseDiv.classList.add('empty-response');
     }
 
@@ -200,15 +200,66 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             
                             parentContainer.replaceChild(tempResponseElement, responseDiv);
                             
+                            // Find the send button to repurpose as stop button
+                            const sendButton = document.querySelector('.panel-block[type="submit"]');
+                            const originalSendHTML = sendButton ? sendButton.innerHTML : '';
+                            
+                            if (sendButton) {
+                                // Change to stop button
+                                sendButton.innerHTML = `
+                                    <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
+                                `;
+                                sendButton.disabled = false;
+                            }
+                            
+                            const abortController = new AbortController();
+                            let isAborted = false;
+                            
+                            // Create stop handler
+                            function stopHandler(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Stop button clicked during rerun');
+                                isAborted = true;
+                                abortController.abort();
+                                
+                                if (typingIndicator && typingIndicator.parentNode) {
+                                    typingIndicator.parentNode.removeChild(typingIndicator);
+                                }
+                                
+                                // Update UI with partial response
+                                const newResponseElement = createResponseMessageElement(
+                                    rawMarkdownContent || '',
+                                    originalQuery, 
+                                    true,
+                                    hasThinkingContent && currentThinking.length > 0 ? currentThinking : null
+                                );
+                                
+                                parentContainer.replaceChild(newResponseElement, tempResponseElement);
+                                
+                                // Add partial response to history if aborted
+                                if (rawMarkdownContent) {
+                                    addToHistory('assistant', rawMarkdownContent);
+                                }
+                                
+                                // Reset send button
+                                if (sendButton) {
+                                    sendButton.innerHTML = originalSendHTML;
+                                    const chatInput = document.getElementById('chat-input');
+                                    sendButton.disabled = chatInput && chatInput.value.trim() === '';
+                                    sendButton.removeEventListener('click', stopHandler);
+                                }
+                            }
+                            
+                            // Add stop functionality
+                            if (sendButton) {
+                                sendButton.addEventListener('click', stopHandler);
+                            }
+                            
                             try {
                                 let rawMarkdownContent = '';
                                 let currentThinking = '';
                                 let hasThinkingContent = false;
-                                
-                                const abortController = new AbortController();
-                                
-                                // Get conversation history for rerun
-                                const conversationHistory = getHistory();
                                 
                                 const result = await sendMessageToOpenRouter(
                                     originalQuery, 
@@ -230,8 +281,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                         if (messageSpace) {
                                             messageSpace.scrollTop = messageSpace.scrollHeight;
                                         }
-                                    },
-                                    conversationHistory
+                                    }
                                 );
                                 
                                 const newResponseElement = createResponseMessageElement(
@@ -250,15 +300,23 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 }
                                 
                                 console.error("Error re-running query:", error);
-                                tempResponseTextSpan.textContent = "Promiň, teď tvůj požadavek nejde zpracovat. Zkus to prosím znovu.";
+                                tempResponseTextSpan.textContent = "Odpověď byla přerušena. Neváhej se zeptat znovu.";
                                 
                                 const errorResponseElement = createResponseMessageElement(
-                                    "Promiň, teď tvůj požadavek nejde zpracovat. Zkus to prosím znovu.", 
+                                    "Odpověď byla přerušena. Neváhej se zeptat znovu.", 
                                     originalQuery, 
                                     true
                                 );
                                 
                                 parentContainer.replaceChild(errorResponseElement, tempResponseElement);
+                            } finally {
+                                // Clean up event listener and reset button
+                                if (sendButton) {
+                                    sendButton.innerHTML = originalSendHTML;
+                                    const chatInput = document.getElementById('chat-input');
+                                    sendButton.disabled = chatInput && chatInput.value.trim() === '';
+                                    sendButton.removeEventListener('click', stopHandler);
+                                }
                             }
                         }
                     });
