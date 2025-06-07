@@ -77,7 +77,8 @@ export function showTutorialModal() {
 			  imageEl.src = page.image;
 			  imageEl.alt = `Ilustrace ke kroku ${pageIndex + 1}`;
 			  imageEl.className = 'tutorial-image';
-			  
+			  imageEl.loading = 'eager';
+
 			  imageContainer.appendChild(imageEl);
 			  contentArea.appendChild(imageContainer);
 		 }
@@ -104,7 +105,7 @@ export function showTutorialModal() {
 			  linkTextSpan.textContent = linkText;
 
 			const svgIcon = `
-				<img src="./assets/vectors/link.svg" alt="Link" class="tutorial-link-icon" width="20" height="20">
+				<img loading="eager" src="./assets/vectors/link.svg" alt="Link" class="tutorial-link-icon" width="20" height="20">
 			`;
 			  
 			  linkBtn.href = page.link;

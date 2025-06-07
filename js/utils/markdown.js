@@ -134,10 +134,10 @@ export function parseMarkdown(text) {
                 ${languageLabel}
                 <div class="code-block-actions">
                     <button class="code-copy-btn" title="Kopírovat kód">
-                        <img src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
+                        <img loading="eager" src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
                     </button>
                     <button class="code-collapse-btn" title="Sbalit/rozbalit kód">
-                        <img src="./assets/vectors/show.svg" alt="Show">
+                        <img loading="eager" src="./assets/vectors/show.svg" alt="Show">
                     </button>
                 </div>
             </div>

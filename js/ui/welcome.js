@@ -5,7 +5,7 @@ export function createWelcomeScreen() {
     welcomeDiv.classList.add('space-welcome');
 
 	const logoSvg = `
-		<img src="./assets/vectors/logo.svg" alt="HejChat" class="space-welcome-logo" width="250" height="206">
+		<img loading="eager" src="./assets/vectors/logo.svg" alt="HejChat" class="space-welcome-logo" width="250" height="206">
 	`;
 
 	welcomeDiv.innerHTML += logoSvg;
@@ -19,7 +19,7 @@ export function createWelcomeScreen() {
     tutorialBlock.classList.add('welcome-tutorial-block');
 
 	const tutorialSvg = `
-		<img src="./assets/vectors/study.svg" alt="Study" class="welcome-tutorial-icon" width="31" height="25">
+		<img loading="eager" src="./assets/vectors/study.svg" alt="Study" class="welcome-tutorial-icon" width="31" height="25">
 	`;
 
     const tutorialText = document.createElement('span');

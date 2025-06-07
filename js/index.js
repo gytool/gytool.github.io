@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize plus menu functionality
 	setupPlusMenu(plusButton);
 	
-	const voiceIconHTML = `<img src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
-	const sendIconHTML = `<img src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
+	const voiceIconHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+	const sendIconHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
 	
 	chatForm.addEventListener('submit', async (event) => {
 		 event.preventDefault();
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			  if (sendButton) {
 					sendButton.disabled = true;
-					sendButton.innerHTML = `<img src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+					sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
 			  }
 		 });
 	}

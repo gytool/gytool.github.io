@@ -207,7 +207,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             if (sendButton) {
                                 // Change to stop button
                                 sendButton.innerHTML = `
-                                    <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
+                                    <img loading="eager" src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
                                 `;
                                 sendButton.disabled = false;
                             }
@@ -368,7 +368,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     const abortController = new AbortController();
 
     sendButton.innerHTML = `
-        <img src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
+        <img loading="eager" src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
     `;
     sendButton.disabled = false;
 

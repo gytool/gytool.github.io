@@ -98,12 +98,12 @@ export function setupCodeBlockHandlers() {
             navigator.clipboard.writeText(codeBlock.textContent)
                 .then(() => {
                     copyBtn.innerHTML = `
-							<img src="./assets/vectors/white-checkmark.svg" alt="Checkmark"> 
+							<img loading="eager" src="./assets/vectors/white-checkmark.svg" alt="Checkmark"> 
 						  `;
                     
                     setTimeout(() => {
                         copyBtn.innerHTML = `
-                           <img src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
+                           <img loading="eager" src="./assets/vectors/white-copy.svg" alt="Copy" width="16" height="16"> 
 								`;
                     }, 2000);
                 })
@@ -119,11 +119,11 @@ export function setupCodeBlockHandlers() {
             
             if (preElement.classList.contains('collapsed')) {
                 collapseBtn.innerHTML = `
-                  <img src="./assets/vectors/hide.svg" alt="Hide"> 
+                  <img loading="eager" src="./assets/vectors/hide.svg" alt="Hide"> 
 					`;
             } else {
                 collapseBtn.innerHTML = `
-                  <img src="./assets/vectors/show.svg" alt="Show"> `;
+                  <img loading="eager" src="./assets/vectors/show.svg" alt="Show"> `;
             }
         }
     });

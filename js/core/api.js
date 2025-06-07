@@ -9,10 +9,9 @@ async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
         throw new Error("Není nastaven API klíč. Nastavte jej v sekci API.");
     }
 
-    // Handle custom model prefix
     let modelToUse = OPENROUTER_MODEL;
     if (modelToUse.startsWith('custom:')) {
-        modelToUse = modelToUse.substring(7); // Remove 'custom:' prefix
+        modelToUse = modelToUse.substring(7);
     }
 
     const messages = [
@@ -145,19 +144,19 @@ function createApiKeyModal(headerApi, onSave) {
             toggleIcon.className = 'api-toggle-icon';
 
             toggleIcon.innerHTML = `
-					<img src="./assets/vectors/eye.svg" alt="Show" width="22" height="15">
+					<img loading="eager" src="./assets/vectors/eye.svg" alt="Show" width="22" height="15">
 				`;
 
             toggleIcon.addEventListener('click', () => {
                 if (input.type === 'password') {
                     input.type = 'text';
                     toggleIcon.innerHTML = `
-							  <img src="./assets/vectors/closed-eye.svg" alt="Hide" width="24" height="21">
+							  <img loading="eager" src="./assets/vectors/closed-eye.svg" alt="Hide" width="24" height="21">
 						  `;
                 } else {
                     input.type = 'password';
                     toggleIcon.innerHTML = `
-							  <img src="./assets/vectors/eye.svg" alt="Show" width="22" height="15">
+							  <img loading="eager" src="./assets/vectors/eye.svg" alt="Show" width="22" height="15">
 						  `;
                 }
             });
