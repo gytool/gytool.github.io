@@ -151,11 +151,11 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                     rerunIcon.addEventListener('click', async () => {
                         const originalQuery = responseDiv.dataset.originalQuery;
                         if (originalQuery) {
-                            // Get the parent message container and find its position in the conversation
+                            
                             const parentContainer = responseDiv.parentNode;
                             if (!parentContainer) return;
                             
-                            // Find all subsequent message containers and remove them
+                            
                             let currentElement = parentContainer.nextElementSibling;
                             while (currentElement) {
                                 const nextElement = currentElement.nextElementSibling;
@@ -163,34 +163,34 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 currentElement = nextElement;
                             }
                             
-                            // Trim the conversation history to this point
-                            // First, find the index of this container among all message containers
+                            
+                            
                             const allContainers = Array.from(document.querySelectorAll('.message-container'));
                             const currentIndex = allContainers.indexOf(parentContainer);
                             
-                            // Adjust the history - we need to keep user and assistant messages up to this point
-                            // Calculate how many pairs of messages to keep (each pair is user + assistant)
-                            const historyPairsToKeep = Math.floor((currentIndex + 1) / 2);
-                            const historyItemsToKeep = historyPairsToKeep * 2; // User message + assistant response
                             
-                            // Get current history and trim it
+                            
+                            const historyPairsToKeep = Math.floor((currentIndex + 1) / 2);
+                            const historyItemsToKeep = historyPairsToKeep * 2; 
+                            
+                            
                             const currentHistory = getHistory();
                             if (currentHistory.length > historyItemsToKeep) {
-                                // Create a new history array with only the items we want to keep
+                                
                                 const trimmedHistory = currentHistory.slice(0, historyItemsToKeep);
                                 
-                                // Clear history and rebuild it with our trimmed version
+                                
                                 clearHistory();
                                 trimmedHistory.forEach(item => {
                                     addToHistory(item.role, item.content);
                                 });
                             }
                             
-                            // Create a temporary response element for showing the loading state
+                            
                             const tempResponseElement = createResponseMessageElement(" ", originalQuery, false);
                             const tempResponseTextSpan = tempResponseElement.querySelector('.space-response-text');
                             
-                            // Clear any existing content first
+                            
                             tempResponseTextSpan.innerHTML = '';
                             
                             const typingIndicator = document.createElement('span');
@@ -200,12 +200,12 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             
                             parentContainer.replaceChild(tempResponseElement, responseDiv);
                             
-                            // Find the send button to repurpose as stop button
+                            
                             const sendButton = document.querySelector('.panel-block[type="submit"]');
                             const originalSendHTML = sendButton ? sendButton.innerHTML : '';
                             
                             if (sendButton) {
-                                // Change to stop button
+                                
                                 sendButton.innerHTML = `
                                     <img loading="eager" src="./assets/vectors/stop.svg" alt="Stop" width="15" height="15">
                                 `;
@@ -215,7 +215,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                             const abortController = new AbortController();
                             let isAborted = false;
                             
-                            // Create stop handler
+                            
                             function stopHandler(e) {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -227,7 +227,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                     typingIndicator.parentNode.removeChild(typingIndicator);
                                 }
                                 
-                                // Update UI with partial response
+                                
                                 const newResponseElement = createResponseMessageElement(
                                     rawMarkdownContent || '',
                                     originalQuery, 
@@ -237,12 +237,12 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 
                                 parentContainer.replaceChild(newResponseElement, tempResponseElement);
                                 
-                                // Add partial response to history if aborted
+                                
                                 if (rawMarkdownContent) {
                                     addToHistory('assistant', rawMarkdownContent);
                                 }
                                 
-                                // Reset send button
+                                
                                 if (sendButton) {
                                     sendButton.innerHTML = originalSendHTML;
                                     const chatInput = document.getElementById('chat-input');
@@ -251,7 +251,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 }
                             }
                             
-                            // Add stop functionality
+                            
                             if (sendButton) {
                                 sendButton.addEventListener('click', stopHandler);
                             }
@@ -310,7 +310,7 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 
                                 parentContainer.replaceChild(errorResponseElement, tempResponseElement);
                             } finally {
-                                // Clean up event listener and reset button
+                                
                                 if (sendButton) {
                                     sendButton.innerHTML = originalSendHTML;
                                     const chatInput = document.getElementById('chat-input');
@@ -362,7 +362,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     messageSpace.appendChild(messageContainer);
     messageSpace.scrollTop = messageSpace.scrollHeight;
 
-    // Add user message to conversation history
+    
     addToHistory('user', userMessage);
 
     const abortController = new AbortController();
@@ -395,7 +395,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
             messageContainer.removeChild(responseElement);
             messageContainer.appendChild(newResponseElement);
             
-            // Add partial response to history if aborted
+            
             if (rawMarkdownContent) {
                 addToHistory('assistant', rawMarkdownContent);
             }
@@ -413,7 +413,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         let currentThinking = '';
         let hasThinkingContent = false;
         
-        // Get current conversation history
+        
         const conversationHistory = getHistory();
         
         await sendMessageToOpenRouter(
@@ -437,7 +437,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
                 
                 messageSpace.scrollTop = messageSpace.scrollHeight;
             },
-            conversationHistory // Pass the conversation history
+            conversationHistory 
         );
         
         console.log("Creating final response with length:", rawMarkdownContent.length);
@@ -451,7 +451,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         messageContainer.removeChild(responseElement);
         messageContainer.appendChild(newResponseElement);
         
-        // Add assistant's response to conversation history
+        
         addToHistory('assistant', rawMarkdownContent);
         
     } catch (error) {

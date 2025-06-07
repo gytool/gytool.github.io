@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const headerModel = document.querySelector('.header-model');
 	const plusButton = document.querySelector('.panel-more').closest('.panel-block');
 	
-	// Global variable to track pending uploads
+	
 	window.pendingUploads = [];
 
 	if (!chatForm) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	updateWelcomeScreen(messageSpace);
 	setupCodeBlockHandlers();
 	
-	// Initialize plus menu functionality
+	
 	setupPlusMenu(plusButton);
 	
 	const voiceIconHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	chatForm.addEventListener('submit', async (event) => {
 		 event.preventDefault();
 		 
-		 // Handle both text and files
+		 
 		 await handleCombinedSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
 	});
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			  sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
 		 });
 		 
-		 // Set initial icon state on page load
+		 
 		 const isEmpty = chatInput.value.trim() === '';
 		 sendButton.disabled = isEmpty;
 		 sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
@@ -94,18 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (headerNew && messageSpace) {
 		 headerNew.addEventListener('click', () => {
-			  // Clear message space
+			  
 			  while (messageSpace.firstChild) {
 					messageSpace.removeChild(messageSpace.firstChild);
 			  }
 			  
-			  // Clear history
+			  
 			  clearHistory();
 			  
-			  // Clear any pending file uploads
+			  
 			  window.pendingUploads = [];
 			  
-			  // Close the upload preview if it's open
+			  
 			  const uploadedContainer = document.querySelector('.uploaded-container');
 			  if (uploadedContainer) {
 					uploadedContainer.classList.remove('active');
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					}, 200);
 			  }
 			  
-			  // Update welcome screen
+			  
 			  updateWelcomeScreen(messageSpace);
 
 			  if (chatInput) {
@@ -132,23 +132,23 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 });
 
-// New function to handle combined submission of text and files
+
 async function handleCombinedSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML) {
 	const userMessage = chatInput.value.trim();
 	const hasFiles = window.pendingUploads && window.pendingUploads.length > 0;
 	
-	// If there's no message and no files, do nothing
+	
 	if (!userMessage && !hasFiles) return;
 	
-	// Handle files first if we have them
+	
 	if (hasFiles) {
-		// Add files to chat
+		
 		addFilesToChat(window.pendingUploads, messageSpace);
 		
-		// Clear the pending uploads
+		
 		window.pendingUploads = [];
 		
-		// Close the upload preview if it's open
+		
 		const uploadedContainer = document.querySelector('.uploaded-container');
 		if (uploadedContainer) {
 			uploadedContainer.classList.remove('active');
@@ -160,22 +160,22 @@ async function handleCombinedSubmission(chatForm, chatInput, messageSpace, sendB
 		}
 	}
 	
-	// Then handle text message if we have one
+	
 	if (userMessage) {
 		await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
 	} else if (hasFiles) {
-		// If we only had files and no text, reset the send button
+		
 		sendButton.innerHTML = userMessage ? sendIconHTML : voiceIconHTML;
 		sendButton.disabled = !userMessage;
 	}
 }
 
-// Helper function to add files to chat
+
 function addFilesToChat(files, messageSpace) {
 	if (!messageSpace || !files.length) return;
 	
 	files.forEach(file => {
-		// Create container for file
+		
 		const uploadContainer = document.createElement('div');
 		uploadContainer.className = 'space-request';
 		
@@ -183,17 +183,17 @@ function addFilesToChat(files, messageSpace) {
 		fileBlock.className = 'space-request-block';
 		
 		if (file.type.startsWith('image/')) {
-			// Handle image
+			
 			const chatImg = document.createElement('img');
 			chatImg.className = 'uploaded-image';
 			chatImg.alt = file.name;
 			
-			// Use stored URL or create a new one
+			
 			let imgSrc = file.previewUrl || URL.createObjectURL(file);
 			chatImg.src = imgSrc;
 			fileBlock.appendChild(chatImg);
 		} else {
-			// Handle other file
+			
 			const chatFileInfo = document.createElement('div');
 			chatFileInfo.className = 'file-attachment';
 			
@@ -220,13 +220,13 @@ function addFilesToChat(files, messageSpace) {
 		messageSpace.appendChild(uploadContainer);
 	});
 	
-	// Scroll to bottom
+	
 	messageSpace.scrollTop = messageSpace.scrollHeight;
 }
 
-// Update the setupPlusMenu function to track files globally
+
 function setupPlusMenu(plusButton) {
-	// Create container for plus menu
+	
 	const plusMenuContainer = document.createElement('div');
 	plusMenuContainer.id = 'plus-menu-container';
 	document.body.appendChild(plusMenuContainer);
@@ -238,57 +238,57 @@ function setupPlusMenu(plusButton) {
 		plusButton.addEventListener('click', (e) => {
 			e.stopPropagation();
 			
-			 // Check if menu is already open
+			 
 			const existingMenu = plusMenuContainer.querySelector('.plus-menu');
 			if (existingMenu && isMenuOpen) {
-				// Close the menu if it's already open
+				
 				existingMenu.classList.remove('active');
 				isMenuOpen = false;
 				
-				// Remove click event listener
+				
 				document.removeEventListener('click', closeMenu);
 				return;
 			}
 			
-			// Remove any existing menu
+			
 			while (plusMenuContainer.firstChild) {
 				plusMenuContainer.removeChild(plusMenuContainer.firstChild);
 			}
 			
-			// Create new menu
+			
 			const menuClone = template.content.cloneNode(true);
 			plusMenuContainer.appendChild(menuClone);
 			
-			// Position menu
+			
 			const plusRect = plusButton.getBoundingClientRect();
 			const menu = plusMenuContainer.querySelector('.plus-menu');
 			menu.style.left = `${plusRect.left}px`;
 			menu.style.bottom = `${window.innerHeight - plusRect.top + 10}px`;
 			
-			// Show menu with animation
+			
 			setTimeout(() => {
 				menu.classList.add('active');
 				isMenuOpen = true;
 			}, 10);
 			
-			// Add click listeners to menu items
+			
 			const menuItems = plusMenuContainer.querySelectorAll('.plus-menu-item');
 			menuItems.forEach(item => {
 				item.addEventListener('click', () => {
-					// Handle menu item click
+					
 					const itemText = item.querySelector('span').textContent;
 					console.log(`Selected: ${itemText}`);
 					
 					if (itemText === 'Fotografie' || itemText === 'Soubory') {
 						const fileInput = document.createElement('input');
 						fileInput.type = 'file';
-						fileInput.multiple = true; // Allow multiple files
+						fileInput.multiple = true; 
 						fileInput.accept = itemText === 'Fotografie' ? 'image/*' : '*/*';
 						
-						// Add event listener for when files are selected
+						
 						fileInput.addEventListener('change', (event) => {
 							if (event.target.files && event.target.files.length > 0) {
-								// Process all selected files
+								
 								const files = Array.from(event.target.files);
 								displayUploadedFiles(files, itemText === 'Fotografie');
 							}
@@ -296,16 +296,16 @@ function setupPlusMenu(plusButton) {
 						
 						fileInput.click();
 					} else if (itemText === 'Kamera') {
-						// Add camera functionality here
+						
 					}
 					
-					// Close menu
+					
 					menu.classList.remove('active');
 					isMenuOpen = false;
 				});
 			});
 			
-			// Close menu when clicking outside
+			
 			document.addEventListener('click', closeMenu);
 		});
 	}
@@ -316,16 +316,16 @@ function setupPlusMenu(plusButton) {
 			menu.classList.remove('active');
 			isMenuOpen = false;
 			
-			// Remove event listener after animation completes
+			
 			setTimeout(() => {
 				document.removeEventListener('click', closeMenu);
 			}, 200);
 		}
 	}
 	
-	// Function to handle multiple files
+	
 	function displayUploadedFiles(files, isImageUpload) {
-		// Create container for uploads if it doesn't exist
+		
 		let uploadedContainer = document.querySelector('.uploaded-container');
 		let isNewContainer = false;
 		
@@ -335,17 +335,17 @@ function setupPlusMenu(plusButton) {
 			document.body.appendChild(uploadedContainer);
 			isNewContainer = true;
 			
-			// Create files container
+			
 			const filesContainer = document.createElement('div');
 			filesContainer.className = 'files-container';
 			uploadedContainer.appendChild(filesContainer);
 			
-			// Create action bar
+			
 			const actionBar = document.createElement('div');
 			actionBar.className = 'upload-actions';
 			uploadedContainer.appendChild(actionBar);
 			
-			// Position container
+			
 			const plusRect = plusButton.getBoundingClientRect();
 			uploadedContainer.style.left = `${plusRect.left}px`;
 			uploadedContainer.style.bottom = `${window.innerHeight - plusRect.top + 10}px`;
@@ -354,29 +354,29 @@ function setupPlusMenu(plusButton) {
 		const filesContainer = uploadedContainer.querySelector('.files-container');
 		const actionBar = uploadedContainer.querySelector('.upload-actions');
 		
-		// Process each file
+		
 		files.forEach(file => {
-			// Add file to global pending uploads with additional data
+			
 			if (isImageUpload && file.type.startsWith('image/')) {
 				const objectURL = URL.createObjectURL(file);
-				file.previewUrl = objectURL; // Store URL with the file
+				file.previewUrl = objectURL; 
 			}
 			
 			window.pendingUploads.push(file);
 			
-			// Create file preview element
+			
 			const filePreview = document.createElement('div');
 			filePreview.className = 'file-preview';
 			
 			if (isImageUpload && file.type.startsWith('image/')) {
-				// Image preview
+				
 				const img = document.createElement('img');
 				img.className = 'uploaded-image';
 				img.alt = file.name;
 				
 				const objectURL = URL.createObjectURL(file);
 				img.src = objectURL;
-				img.dataset.src = objectURL; // Store for later use
+				img.dataset.src = objectURL; 
 				
 				img.onload = () => {
 					URL.revokeObjectURL(objectURL);
@@ -384,7 +384,7 @@ function setupPlusMenu(plusButton) {
 				
 				filePreview.appendChild(img);
 			} else {
-				// File preview
+				
 				const fileInfo = document.createElement('div');
 				fileInfo.className = 'file-attachment';
 				
@@ -407,14 +407,14 @@ function setupPlusMenu(plusButton) {
 				filePreview.appendChild(fileInfo);
 			}
 			
-			// Add to files container
+			
 			filesContainer.appendChild(filePreview);
 		});
 		
-		// Update action bar
+		
 		updateActionBar(actionBar);
 		
-		// Show the container if it's new
+		
 		if (isNewContainer) {
 			setTimeout(() => {
 				uploadedContainer.classList.add('active');
@@ -422,10 +422,10 @@ function setupPlusMenu(plusButton) {
 		}
 		
 		function updateActionBar(actionBar) {
-			// Clear existing buttons
+			
 			actionBar.innerHTML = '';
 			
-			// Just show a close button regardless of files
+			
 			const closeButton = document.createElement('button');
 			closeButton.className = 'upload-close-button';
 			closeButton.innerHTML = '✕';
@@ -439,13 +439,13 @@ function setupPlusMenu(plusButton) {
 				if (document.body.contains(uploadedContainer)) {
 					document.body.removeChild(uploadedContainer);
 				}
-				// Don't clear uploads when closing - they remain pending until sent or canceled
+				
 			}, 200);
 		}
 	}
 }
 
-// Helper function for file size formatting
+
 function formatFileSize(bytes) {
 	if (bytes < 1024) return bytes + ' B';
 	else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
