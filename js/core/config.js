@@ -4,9 +4,9 @@ export const API_URLS = {
 
 export const MODELS = [
 	{ value: 'meta-llama/llama-4-maverick:free', label: 'Meta - Llama 4 Maverick' },
-	{ value: 'google/gemini-2.5-pro-exp-03-25:free', label: 'Google - Gemini 2.5 Pro Experimental' },
-	{ value: 'qwen/qwen3-235b-a22b:free', label: 'Qwen - Qwen3 235B A22B' },
-	{ value: 'deepseek/deepseek-r1:free', label: 'DeepSeek - R1' }
+	{ value: 'google/gemini-2.0-flash-exp:free', label: 'Google - Gemini 2.0 Flash' },
+	{ value: 'deepseek/deepseek-chat-v3-0324:free', label: 'DeepSeek - V3' },
+	{ value: 'qwen/qwq-32b:free', label: 'Qwen - QwQ' },
 ];
 
 export const DEFAULT_SETTINGS = {
