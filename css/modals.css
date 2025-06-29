@@ -572,6 +572,199 @@
     transform: scale(0.95);
 }
 
+/* Speech Recognition Modal Styles */
+.speech-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.speech-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.speech-modal {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    padding: 0;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.speech-overlay.active .speech-modal {
+    transform: scale(1) translateY(0);
+}
+
+.speech-header {
+    background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.speech-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.speech-close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.speech-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.speech-content {
+    padding: 2rem;
+    text-align: center;
+}
+
+.speech-visualizer {
+    margin-bottom: 2rem;
+}
+
+.speech-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    position: relative;
+    animation: speechPulse 2s infinite ease-in-out;
+}
+
+.speech-circle.listening {
+    animation: speechListening 1.5s infinite ease-in-out;
+}
+
+.speech-microphone {
+    font-size: 3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.speech-text {
+    margin: 1.5rem 0;
+    min-height: 60px;
+}
+
+.speech-text p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+#speech-interim {
+    color: #666;
+    font-style: italic;
+}
+
+#speech-final {
+    color: #333;
+    font-weight: 500;
+}
+
+.speech-controls {
+    margin-top: 1.5rem;
+}
+
+.speech-stop {
+    background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-family: "DM Sans", sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(43, 125, 180, 0.3);
+}
+
+.speech-stop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(43, 125, 180, 0.4);
+}
+
+.speech-stop:active {
+    transform: scale(0.95);
+}
+
+/* Speech recognition animations */
+@keyframes speechPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(43, 125, 180, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(43, 125, 180, 0);
+    }
+}
+
+@keyframes speechListening {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(43, 125, 180, 0.6);
+    }
+    25% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(43, 125, 180, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 20px rgba(43, 125, 180, 0.1);
+    }
+    75% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(43, 125, 180, 0.3);
+    }
+}
+
+/* Error state */
+.speech-circle.error {
+    background: linear-gradient(249deg, #dc3545 -20.75%, #e74c3c 68.99%);
+    animation: speechError 0.5s ease-in-out;
+}
+
+@keyframes speechError {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
 /* Mobile optimizations */
 @media (max-width: 600px) {
     .camera-modal {
@@ -599,12 +792,18 @@
         height: 45px;
         font-size: 1.3rem;
     }
-}
-
-/* iOS Safari specific fixes */
-@supports (-webkit-appearance: none) {
-    .camera-video {
-        -webkit-transform: translateZ(0);
-        transform: translateZ(0);
+    
+    .speech-modal {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .speech-circle {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .speech-microphone {
+        font-size: 2.5rem;
     }
 }

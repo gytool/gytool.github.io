@@ -602,3 +602,34 @@
 	font-size: 1rem;
 	font-weight: 500;
 }
+
+/* Enhanced microphone button styling */
+.panel-send[alt="Voice"] {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(43, 125, 180, 0.3));
+}
+
+.panel-send[alt="Voice"]:hover {
+    filter: drop-shadow(0 4px 8px rgba(43, 125, 180, 0.5));
+    transform: scale(1.1);
+}
+
+.panel-send[alt="Voice"]:active {
+    transform: scale(0.95);
+}
+
+/* Microphone recording state */
+.panel-send.recording {
+    animation: microphoneRecording 1.5s infinite ease-in-out;
+}
+
+@keyframes microphoneRecording {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 2px 4px rgba(220, 53, 69, 0.3));
+    }
+    50% {
+        transform: scale(1.1);
+        filter: drop-shadow(0 4px 8px rgba(220, 53, 69, 0.5));
+    }
+}

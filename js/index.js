@@ -28,6 +28,7 @@ import {
 } from './utils/syntax.js';
 
 import { clearHistory } from './core/history.js';
+import { SpeechRecognitionManager } from './utils/speech.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const chatForm = document.getElementById('chat-form');
@@ -69,6 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
 			  const isEmpty = chatInput.value.trim() === '';
 			  sendButton.disabled = isEmpty;
 			  sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
+		 });
+		 
+		 // Handle voice button click when input is empty
+		 sendButton.addEventListener('click', (e) => {
+			  if (chatInput.value.trim() === '' && sendButton.innerHTML.includes('voice.svg')) {
+					e.preventDefault();
+					e.stopPropagation();
+					openSpeechModal();
+			  }
 		 });
 		 
 		 
@@ -592,4 +602,127 @@ function formatFileSize(bytes) {
 	if (bytes < 1024) return bytes + ' B';
 	else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
 	else return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+// Speech recognition modal functions
+function openSpeechModal() {
+    if (!speechManager.isSupported()) {
+        alert('Rozpoznávání řeči není v tomto prohlížeči podporováno.');
+        return;
+    }
+    
+    // Create modal from template
+    const template = document.getElementById('speechModalTemplate');
+    if (!template) return;
+    
+    const modalClone = template.content.cloneNode(true);
+    const overlay = modalClone.querySelector('.speech-overlay');
+    const modal = modalClone.querySelector('.speech-modal');
+    const circle = modalClone.querySelector('.speech-circle');
+    const closeBtn = modalClone.querySelector('.speech-close');
+    const stopBtn = modalClone.querySelector('.speech-stop');
+    const interimText = modalClone.querySelector('#speech-interim');
+    const finalText = modalClone.querySelector('#speech-final');
+    
+    document.body.appendChild(overlay);
+    
+    // Show modal with animation
+    setTimeout(() => {
+        overlay.classList.add('active');
+    }, 10);
+    
+    let finalTranscript = '';
+    
+    // Setup speech recognition callbacks
+    speechManager.onResult = (final, interim) => {
+        if (final) {
+            finalTranscript += final;
+            finalText.textContent = finalTranscript;
+            interimText.textContent = interim || 'Pokračujte v mluvení...';
+        } else {
+            interimText.textContent = interim || 'Poslouchám...';
+        }
+        
+        // Add listening animation
+        circle.classList.add('listening');
+    };
+    
+    speechManager.onError = (error) => {
+        circle.classList.remove('listening');
+        circle.classList.add('error');
+        
+        let errorMessage = 'Došlo k chybě při rozpoznávání řeči.';
+        
+        switch (error) {
+            case 'not-allowed':
+                errorMessage = 'Přístup k mikrofonu byl odmítnut.';
+                break;
+            case 'no-speech':
+                errorMessage = 'Nebyl detekován žádný hlas.';
+                break;
+            case 'audio-capture':
+                errorMessage = 'Nepodařilo se získat přístup k mikrofonu.';
+                break;
+            case 'network':
+                errorMessage = 'Chyba síťového připojení.';
+                break;
+        }
+        
+        interimText.textContent = errorMessage;
+        
+        setTimeout(() => {
+            closeSpeechModal();
+        }, 2000);
+    };
+    
+    speechManager.onEnd = () => {
+        circle.classList.remove('listening');
+        
+        if (finalTranscript.trim()) {
+            // Insert recognized text into chat input
+            chatInput.value = finalTranscript.trim();
+            chatInput.dispatchEvent(new Event('input')); // Trigger input event to update send button
+            chatInput.focus();
+        }
+        
+        closeSpeechModal();
+    };
+    
+    // Close modal function
+    function closeSpeechModal() {
+        speechManager.stop();
+        overlay.classList.remove('active');
+        
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+        }, 300);
+    }
+    
+    // Event listeners
+    closeBtn.addEventListener('click', closeSpeechModal);
+    stopBtn.addEventListener('click', () => {
+        speechManager.stop();
+    });
+    
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeSpeechModal();
+        }
+    });
+    
+    // Start speech recognition
+    try {
+        speechManager.start();
+        interimText.textContent = 'Začněte mluvit...';
+    } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+        interimText.textContent = 'Nepodařilo se spustit rozpoznávání řeči.';
+        circle.classList.add('error');
+        
+        setTimeout(() => {
+            closeSpeechModal();
+        }, 2000);
+    }
 }

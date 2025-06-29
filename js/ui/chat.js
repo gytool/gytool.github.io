@@ -243,10 +243,18 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 }
                                 
                                 
+                                // Reset send button to correct state
                                 if (sendButton) {
                                     sendButton.innerHTML = originalSendHTML;
                                     const chatInput = document.getElementById('chat-input');
-                                    sendButton.disabled = chatInput && chatInput.value.trim() === '';
+                                    const isEmpty = chatInput && chatInput.value.trim() === '';
+                                    sendButton.disabled = isEmpty;
+                                    // Ensure correct icon based on input state
+                                    if (isEmpty) {
+                                        sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+                                    } else {
+                                        sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
+                                    }
                                     sendButton.removeEventListener('click', stopHandler);
                                 }
                             }
@@ -311,10 +319,18 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
                                 parentContainer.replaceChild(errorResponseElement, tempResponseElement);
                             } finally {
                                 
+                                // Reset send button to correct state
                                 if (sendButton) {
                                     sendButton.innerHTML = originalSendHTML;
                                     const chatInput = document.getElementById('chat-input');
-                                    sendButton.disabled = chatInput && chatInput.value.trim() === '';
+                                    const isEmpty = chatInput && chatInput.value.trim() === '';
+                                    sendButton.disabled = isEmpty;
+                                    // Ensure correct icon based on input state
+                                    if (isEmpty) {
+                                        sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+                                    } else {
+                                        sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
+                                    }
                                     sendButton.removeEventListener('click', stopHandler);
                                 }
                             }
@@ -351,6 +367,8 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     }
     
     chatInput.value = '';
+    // Trigger input event to update button state
+    chatInput.dispatchEvent(new Event('input'));
 
     const welcomeScreen = messageSpace.querySelector('.space-welcome');
     if (welcomeScreen) {
@@ -371,12 +389,28 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     messageSpace.appendChild(messageContainer);
     messageSpace.scrollTop = messageSpace.scrollHeight;
 
-    // Add to history (include file info in text for history)
     let historyMessage = userMessage;
     if (attachedFiles && attachedFiles.length > 0) {
-        const fileInfo = attachedFiles.map(file => 
-            `[Připojený soubor: ${file.name}]`
-        ).join(' ');
+        const fileInfoPromises = attachedFiles.map(async (file) => {
+            if (file.type.startsWith('image/')) {
+                return `[Připojený obrázek: ${file.name}]`;
+            } else {
+                // Try to read text file content for history
+                try {
+                    const content = await readFileContent(file);
+                    if (content !== null) {
+                        return `[Soubor: ${file.name}]\n${content}`;
+                    } else {
+                        return `[Připojený soubor: ${file.name}]`;
+                    }
+                } catch (error) {
+                    return `[Připojený soubor: ${file.name}]`;
+                }
+            }
+        });
+        
+        const fileInfos = await Promise.all(fileInfoPromises);
+        const fileInfo = fileInfos.join('\n\n');
         historyMessage = userMessage ? `${userMessage}\n\n${fileInfo}` : fileInfo;
     }
     addToHistory('user', historyMessage);
@@ -500,7 +534,15 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         }
         
         sendButton.innerHTML = originalSendHTML;
-        sendButton.disabled = chatInput.value.trim() === '';
+        // Check if input is empty and set appropriate state
+        const isEmpty = chatInput.value.trim() === '';
+        sendButton.disabled = isEmpty;
+        // Ensure the correct icon is shown based on input state
+        if (isEmpty) {
+            sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+        } else {
+            sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
+        }
         sendButton.removeEventListener('click', stopHandler);
     }
 }
@@ -583,4 +625,39 @@ function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
     else return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+// Add the readFileContent helper function to chat.js as well
+async function readFileContent(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        
+        if (file.type.startsWith('text/') || 
+            file.name.endsWith('.txt') || 
+            file.name.endsWith('.md') || 
+            file.name.endsWith('.json') || 
+            file.name.endsWith('.csv') || 
+            file.name.endsWith('.xml') || 
+            file.name.endsWith('.html') || 
+            file.name.endsWith('.css') || 
+            file.name.endsWith('.js') || 
+            file.name.endsWith('.ts') || 
+            file.name.endsWith('.py') || 
+            file.name.endsWith('.java') || 
+            file.name.endsWith('.cpp') || 
+            file.name.endsWith('.c') || 
+            file.name.endsWith('.h') || 
+            file.name.endsWith('.php') || 
+            file.name.endsWith('.rb') || 
+            file.name.endsWith('.go') || 
+            file.name.endsWith('.rs') || 
+            file.name.endsWith('.yaml') || 
+            file.name.endsWith('.yml')) {
+            reader.readAsText(file);
+        } else {
+            resolve(null);
+        }
+    });
 }

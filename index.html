@@ -81,7 +81,32 @@
 					<img loading="eager" src="./assets/vectors/file.svg" alt="Soubory" class="plus-menu-icon">
 					<span>Soubory</span>
 				</div>
-
+			</div>
+		</template>
+		
+		<!-- Add speech recognition modal template -->
+		<template id="speechModalTemplate">
+			<div class="speech-overlay">
+				<div class="speech-modal">
+					<div class="speech-header">
+						<h3>Poslouchám...</h3>
+						<button class="speech-close">✕</button>
+					</div>
+					<div class="speech-content">
+						<div class="speech-visualizer">
+							<div class="speech-circle">
+								<div class="speech-microphone">🎤</div>
+							</div>
+						</div>
+						<div class="speech-text">
+							<p id="speech-interim">Začněte mluvit...</p>
+							<p id="speech-final"></p>
+						</div>
+						<div class="speech-controls">
+							<button class="speech-stop">Zastavit</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</template>
 		

@@ -27,6 +27,43 @@ function getCurrentModelSupportsVision() {
     return model ? model.supportsVision : false;
 }
 
+// Add new helper function to read file content
+async function readFileContent(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        
+        // Check file type and read accordingly
+        if (file.type.startsWith('text/') || 
+            file.name.endsWith('.txt') || 
+            file.name.endsWith('.md') || 
+            file.name.endsWith('.json') || 
+            file.name.endsWith('.csv') || 
+            file.name.endsWith('.xml') || 
+            file.name.endsWith('.html') || 
+            file.name.endsWith('.css') || 
+            file.name.endsWith('.js') || 
+            file.name.endsWith('.ts') || 
+            file.name.endsWith('.py') || 
+            file.name.endsWith('.java') || 
+            file.name.endsWith('.cpp') || 
+            file.name.endsWith('.c') || 
+            file.name.endsWith('.h') || 
+            file.name.endsWith('.php') || 
+            file.name.endsWith('.rb') || 
+            file.name.endsWith('.go') || 
+            file.name.endsWith('.rs') || 
+            file.name.endsWith('.yaml') || 
+            file.name.endsWith('.yml')) {
+            reader.readAsText(file);
+        } else {
+            // For binary files, we can't read content meaningfully
+            resolve(null);
+        }
+    });
+}
+
 async function sendMessageToOpenRouter(message, signal, onChunk, history = [], attachedFiles = []) {
     if (!OPENROUTER_API_KEY) {
         throw new Error("Není nastaven API klíč. Nastavte jej v sekci API.");
@@ -54,43 +91,60 @@ async function sendMessageToOpenRouter(message, signal, onChunk, history = [], a
         });
     }
     
-    // Add image content if model supports vision and we have image files
+    // Process attached files
     const supportsVision = getCurrentModelSupportsVision();
-    if (supportsVision && attachedFiles && attachedFiles.length > 0) {
+    if (attachedFiles && attachedFiles.length > 0) {
         for (const file of attachedFiles) {
             if (file.type.startsWith('image/')) {
-                try {
-                    const base64Data = await fileToBase64(file);
+                // Handle images for vision models
+                if (supportsVision) {
+                    try {
+                        const base64Data = await fileToBase64(file);
+                        userMessage.content.push({
+                            type: 'image_url',
+                            image_url: {
+                                url: base64Data
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error converting image to base64:', error);
+                        userMessage.content.push({
+                            type: 'text',
+                            text: `[Nepodařilo se načíst obrázek: ${file.name}]`
+                        });
+                    }
+                } else {
                     userMessage.content.push({
-                        type: 'image_url',
-                        image_url: {
-                            url: base64Data
-                        }
+                        type: 'text',
+                        text: `[Připojený obrázek: ${file.name}, velikost: ${formatFileSize(file.size)}]`
                     });
-                } catch (error) {
-                    console.error('Error converting image to base64:', error);
                 }
             } else {
-                // For non-image files, add as text description
-                userMessage.content.push({
-                    type: 'text',
-                    text: `[Připojený soubor: ${file.name}, velikost: ${formatFileSize(file.size)}]`
-                });
+                // Handle text-based files
+                try {
+                    const fileContent = await readFileContent(file);
+                    if (fileContent !== null) {
+                        // File content was successfully read
+                        const fileText = `[Obsah souboru: ${file.name}]\n\`\`\`\n${fileContent}\n\`\`\``;
+                        userMessage.content.push({
+                            type: 'text',
+                            text: fileText
+                        });
+                    } else {
+                        // Binary file or unsupported format
+                        userMessage.content.push({
+                            type: 'text',
+                            text: `[Připojený soubor: ${file.name}, velikost: ${formatFileSize(file.size)} - binární soubor, obsah nelze zobrazit]`
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error reading file content:', error);
+                    userMessage.content.push({
+                        type: 'text',
+                        text: `[Nepodařilo se načíst soubor: ${file.name}]`
+                    });
+                }
             }
-        }
-    } else if (attachedFiles && attachedFiles.length > 0) {
-        // If model doesn't support vision, add file info as text
-        const fileInfo = attachedFiles.map(file => 
-            `[Připojený soubor: ${file.name}, velikost: ${formatFileSize(file.size)}]`
-        ).join('\n');
-        
-        if (message && message.trim()) {
-            userMessage.content[0].text += '\n\n' + fileInfo;
-        } else {
-            userMessage.content.push({
-                type: 'text',
-                text: fileInfo
-            });
         }
     }
     
