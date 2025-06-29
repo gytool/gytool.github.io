@@ -4,7 +4,30 @@ import { showTutorialModal } from '../ui/modals.js';
 let OPENROUTER_API_KEY = localStorage.getItem('openrouter_api_key') || '';
 let OPENROUTER_MODEL = localStorage.getItem('openrouter_model') || DEFAULT_SETTINGS.MODEL;
 
-async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
+// Helper function to convert file to base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// Helper function to check if current model supports vision
+function getCurrentModelSupportsVision() {
+    let modelToCheck = OPENROUTER_MODEL;
+    if (modelToCheck.startsWith('custom:')) {
+        // For custom models, assume they support vision if they contain certain keywords
+        const modelName = modelToCheck.substring(7).toLowerCase();
+        return modelName.includes('vision') || modelName.includes('gpt-4') || modelName.includes('gemini') || modelName.includes('claude');
+    }
+    
+    const model = MODELS.find(m => m.value === modelToCheck);
+    return model ? model.supportsVision : false;
+}
+
+async function sendMessageToOpenRouter(message, signal, onChunk, history = [], attachedFiles = []) {
     if (!OPENROUTER_API_KEY) {
         throw new Error("Není nastaven API klíč. Nastavte jej v sekci API.");
     }
@@ -19,7 +42,64 @@ async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
     ];
 
     messages.push(...history);
-    messages.push({ role: 'user', content: message });
+    
+    // Create the user message
+    const userMessage = { role: 'user', content: [] };
+    
+    // Add text content
+    if (message && message.trim()) {
+        userMessage.content.push({
+            type: 'text',
+            text: message
+        });
+    }
+    
+    // Add image content if model supports vision and we have image files
+    const supportsVision = getCurrentModelSupportsVision();
+    if (supportsVision && attachedFiles && attachedFiles.length > 0) {
+        for (const file of attachedFiles) {
+            if (file.type.startsWith('image/')) {
+                try {
+                    const base64Data = await fileToBase64(file);
+                    userMessage.content.push({
+                        type: 'image_url',
+                        image_url: {
+                            url: base64Data
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error converting image to base64:', error);
+                }
+            } else {
+                // For non-image files, add as text description
+                userMessage.content.push({
+                    type: 'text',
+                    text: `[Připojený soubor: ${file.name}, velikost: ${formatFileSize(file.size)}]`
+                });
+            }
+        }
+    } else if (attachedFiles && attachedFiles.length > 0) {
+        // If model doesn't support vision, add file info as text
+        const fileInfo = attachedFiles.map(file => 
+            `[Připojený soubor: ${file.name}, velikost: ${formatFileSize(file.size)}]`
+        ).join('\n');
+        
+        if (message && message.trim()) {
+            userMessage.content[0].text += '\n\n' + fileInfo;
+        } else {
+            userMessage.content.push({
+                type: 'text',
+                text: fileInfo
+            });
+        }
+    }
+    
+    // If content is just text, simplify the structure
+    if (userMessage.content.length === 1 && userMessage.content[0].type === 'text') {
+        userMessage.content = userMessage.content[0].text;
+    }
+    
+    messages.push(userMessage);
 
     const requestBody = {
         model: modelToUse,
@@ -75,7 +155,6 @@ async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
                         if (content) {
                             fullText += content;
                             
-                            
                             if (parsedLine.choices[0].delta?.thinking) {
                                 hasThinking = true;
                                 thinking += parsedLine.choices[0].delta.thinking;
@@ -100,6 +179,13 @@ async function sendMessageToOpenRouter(message, signal, onChunk, history = []) {
         console.error("API request error:", error);
         throw error;
     }
+}
+
+// Helper function for file size formatting
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
 }
 
 function createApiKeyModal(headerApi, onSave) {
@@ -336,7 +422,11 @@ function createModelSettingsModal(headerSettings, onSave) {
             MODELS.forEach(model => {
                 const option = document.createElement('option');
                 option.value = model.value;
-                option.textContent = model.label;
+                
+                // Add vision indicator to label
+                const visionIndicator = model.supportsVision ? ' 📷' : '';
+                option.textContent = model.label + visionIndicator;
+                
                 if (model.value === OPENROUTER_MODEL) {
                     option.selected = true;
                 }
@@ -432,9 +522,9 @@ function createModelSettingsModal(headerSettings, onSave) {
                 overlay.parentNode.removeChild(overlay);
             });
 
-            // Info text
+            // Info text with vision capability note
             const infoText = document.createElement('p');
-            infoText.textContent = "Vyberte model pro generování odpovědí.";
+            infoText.innerHTML = "Vyberte model pro generování odpovědí.<br><small>📷 = podporuje obrázky</small>";
             infoText.className = 'api-info-text';
             
             infoText.addEventListener('click', () => {
@@ -484,5 +574,6 @@ export {
     getApiKey,
     setApiKey,
     getModel,
-    setModel
+    setModel,
+    getCurrentModelSupportsVision
 };

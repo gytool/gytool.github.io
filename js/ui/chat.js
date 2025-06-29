@@ -328,11 +328,11 @@ export function createResponseMessageElement(messageText, originalQuery, showIco
     return responseDiv;
 }
 
-export async function handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, originalSendHTML) {
+export async function handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, originalSendHTML, attachedFiles = []) {
     if (!chatInput) return;
 
     const userMessage = chatInput.value.trim();
-    if (userMessage === '') return;
+    if (userMessage === '' && (!attachedFiles || attachedFiles.length === 0)) return;
     if (!messageSpace) return;
 
     const messageContainer = document.createElement('div');
@@ -362,8 +362,15 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     messageSpace.appendChild(messageContainer);
     messageSpace.scrollTop = messageSpace.scrollHeight;
 
-    
-    addToHistory('user', userMessage);
+    // Add to history (include file info in text for history)
+    let historyMessage = userMessage;
+    if (attachedFiles && attachedFiles.length > 0) {
+        const fileInfo = attachedFiles.map(file => 
+            `[Připojený soubor: ${file.name}]`
+        ).join(' ');
+        historyMessage = userMessage ? `${userMessage}\n\n${fileInfo}` : fileInfo;
+    }
+    addToHistory('user', historyMessage);
 
     const abortController = new AbortController();
 
@@ -395,7 +402,6 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
             messageContainer.removeChild(responseElement);
             messageContainer.appendChild(newResponseElement);
             
-            
             if (rawMarkdownContent) {
                 addToHistory('assistant', rawMarkdownContent);
             }
@@ -412,7 +418,6 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         let rawMarkdownContent = '';
         let currentThinking = '';
         let hasThinkingContent = false;
-        
         
         const conversationHistory = getHistory();
         
@@ -437,7 +442,8 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
                 
                 messageSpace.scrollTop = messageSpace.scrollHeight;
             },
-            conversationHistory 
+            conversationHistory,
+            attachedFiles // Pass attached files to API
         );
         
         console.log("Creating final response with length:", rawMarkdownContent.length);
@@ -450,7 +456,6 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         
         messageContainer.removeChild(responseElement);
         messageContainer.appendChild(newResponseElement);
-        
         
         addToHistory('assistant', rawMarkdownContent);
         

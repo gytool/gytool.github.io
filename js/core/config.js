@@ -1,16 +1,16 @@
 export const API_URLS = {
-	OPENROUTER: 'https://openrouter.ai/api/v1/chat/completions'
+    OPENROUTER: 'https://openrouter.ai/api/v1/chat/completions'
 };
 
 export const MODELS = [
-	{ value: 'meta-llama/llama-4-maverick:free', label: 'Meta - Llama 4 Maverick' },
-	{ value: 'google/gemini-2.0-flash-exp:free', label: 'Google - Gemini 2.0 Flash' },
-	{ value: 'deepseek/deepseek-chat-v3-0324:free', label: 'DeepSeek - V3' },
-	{ value: 'qwen/qwq-32b:free', label: 'Qwen - QwQ' },
+    { value: 'meta-llama/llama-4-maverick:free', label: 'Meta - Llama 4 Maverick', supportsVision: false },
+    { value: 'google/gemini-2.0-flash-exp:free', label: 'Google - Gemini 2.0 Flash', supportsVision: true },
+    { value: 'deepseek/deepseek-chat-v3-0324:free', label: 'DeepSeek - V3', supportsVision: false },
+    { value: 'qwen/qwq-32b:free', label: 'Qwen - QwQ', supportsVision: false },
 ];
 
 export const DEFAULT_SETTINGS = {
-	MODEL: 'meta-llama/llama-4-maverick:free'
+    MODEL: 'meta-llama/llama-4-maverick:free'
 };
 
 export const SYSTEM_PROMPT = `Jsi HejChat, AI asistent školy Hejčín. Jsi tu proto, abys pomáhal studentům s jejich studijními otázkami, domácími úkoly a školními projekty. Komunikuj v češtině, pokud uživatel nezačne rozhovor v jiném jazyce.
@@ -34,5 +34,6 @@ Při odpovídání:
 - Pro kód používej bloky kódu s označením jazyka
 - V případě dlouhých odpovědí rozděluj text do logických sekcí s nadpisy
 - Pokud si nejsi jistý odpovědí, řekni to upřímně a navrhni alternativní zdroje informací
+- Pokud uživatel nahraje obrázek, popisuj co vidíš a odpovídej na otázky související s obsahem obrázku
 
 Tvým cílem je být užitečným vzdělávacím nástrojem, který pomáhá studentům lépe porozumět probírané látce a rozvíjet jejich znalosti a dovednosti.`;

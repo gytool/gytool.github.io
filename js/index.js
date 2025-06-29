@@ -134,40 +134,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 async function handleCombinedSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML) {
-	const userMessage = chatInput.value.trim();
-	const hasFiles = window.pendingUploads && window.pendingUploads.length > 0;
-	
-	
-	if (!userMessage && !hasFiles) return;
-	
-	
-	if (hasFiles) {
-		
-		addFilesToChat(window.pendingUploads, messageSpace);
-		
-		
-		window.pendingUploads = [];
-		
-		
-		const uploadedContainer = document.querySelector('.uploaded-container');
-		if (uploadedContainer) {
-			uploadedContainer.classList.remove('active');
-			setTimeout(() => {
-				if (uploadedContainer.parentNode) {
-					uploadedContainer.parentNode.removeChild(uploadedContainer);
-				}
-			}, 200);
-		}
-	}
-	
-	
-	if (userMessage) {
-		await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
-	} else if (hasFiles) {
-		
-		sendButton.innerHTML = userMessage ? sendIconHTML : voiceIconHTML;
-		sendButton.disabled = !userMessage;
-	}
+    const userMessage = chatInput.value.trim();
+    const hasFiles = window.pendingUploads && window.pendingUploads.length > 0;
+    
+    if (!userMessage && !hasFiles) return;
+    
+    let filesToSend = [];
+    
+    if (hasFiles) {
+        // Store files to send to API
+        filesToSend = [...window.pendingUploads];
+        
+        addFilesToChat(window.pendingUploads, messageSpace);
+        
+        window.pendingUploads = [];
+        
+        const uploadedContainer = document.querySelector('.uploaded-container');
+        if (uploadedContainer) {
+            uploadedContainer.classList.remove('active');
+            setTimeout(() => {
+                if (uploadedContainer.parentNode) {
+                    uploadedContainer.parentNode.removeChild(uploadedContainer);
+                }
+            }, 200);
+        }
+    }
+    
+    if (userMessage || hasFiles) {
+        await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML, filesToSend);
+    }
 }
 
 
