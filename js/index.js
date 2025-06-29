@@ -145,8 +145,7 @@ async function handleCombinedSubmission(chatForm, chatInput, messageSpace, sendB
         // Store files to send to API
         filesToSend = [...window.pendingUploads];
         
-        addFilesToChat(window.pendingUploads, messageSpace);
-        
+        // Clear uploads immediately - files will be shown in the message container
         window.pendingUploads = [];
         
         const uploadedContainer = document.querySelector('.uploaded-container');
@@ -160,63 +159,10 @@ async function handleCombinedSubmission(chatForm, chatInput, messageSpace, sendB
         }
     }
     
+    // Send message with files - files will be handled in handleChatSubmission
     if (userMessage || hasFiles) {
         await handleChatSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML, filesToSend);
     }
-}
-
-
-function addFilesToChat(files, messageSpace) {
-	if (!messageSpace || !files.length) return;
-	
-	files.forEach(file => {
-		
-		const uploadContainer = document.createElement('div');
-		uploadContainer.className = 'space-request';
-		
-		const fileBlock = document.createElement('div');
-		fileBlock.className = 'space-request-block';
-		
-		if (file.type.startsWith('image/')) {
-			
-			const chatImg = document.createElement('img');
-			chatImg.className = 'uploaded-image';
-			chatImg.alt = file.name;
-			
-			
-			let imgSrc = file.previewUrl || URL.createObjectURL(file);
-			chatImg.src = imgSrc;
-			fileBlock.appendChild(chatImg);
-		} else {
-			
-			const chatFileInfo = document.createElement('div');
-			chatFileInfo.className = 'file-attachment';
-			
-			const chatFileIcon = document.createElement('img');
-			chatFileIcon.src = './assets/vectors/file.svg';
-			chatFileIcon.alt = 'File';
-			chatFileIcon.className = 'file-attachment-icon';
-			
-			const chatFileName = document.createElement('span');
-			chatFileName.textContent = file.name;
-			chatFileName.className = 'file-attachment-name';
-			
-			const chatFileSize = document.createElement('span');
-			chatFileSize.textContent = formatFileSize(file.size);
-			chatFileSize.className = 'file-attachment-size';
-			
-			chatFileInfo.appendChild(chatFileIcon);
-			chatFileInfo.appendChild(chatFileName);
-			chatFileInfo.appendChild(chatFileSize);
-			fileBlock.appendChild(chatFileInfo);
-		}
-		
-		uploadContainer.appendChild(fileBlock);
-		messageSpace.appendChild(uploadContainer);
-	});
-	
-	
-	messageSpace.scrollTop = messageSpace.scrollHeight;
 }
 
 
@@ -270,7 +216,6 @@ function setupPlusMenu(plusButton) {
 			const menuItems = plusMenuContainer.querySelectorAll('.plus-menu-item');
 			menuItems.forEach(item => {
 				item.addEventListener('click', () => {
-					
 					const itemText = item.querySelector('span').textContent;
 					console.log(`Selected: ${itemText}`);
 					
@@ -279,7 +224,6 @@ function setupPlusMenu(plusButton) {
 						fileInput.type = 'file';
 						fileInput.multiple = true; 
 						fileInput.accept = itemText === 'Fotografie' ? 'image/*' : '*/*';
-						
 						
 						fileInput.addEventListener('change', (event) => {
 							if (event.target.files && event.target.files.length > 0) {
@@ -291,7 +235,8 @@ function setupPlusMenu(plusButton) {
 						
 						fileInput.click();
 					} else if (itemText === 'Kamera') {
-						
+						// Implement camera functionality
+						openCamera();
 					}
 					
 					
@@ -438,6 +383,208 @@ function setupPlusMenu(plusButton) {
 			}, 200);
 		}
 	}
+	
+	// Add camera functionality
+    function openCamera() {
+        // Check if camera is supported
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Kamera není podporována ve vašem prohlížeči.');
+            return;
+        }
+        
+        // Create camera modal
+        const cameraOverlay = document.createElement('div');
+        cameraOverlay.className = 'camera-overlay';
+        
+        const cameraModal = document.createElement('div');
+        cameraModal.className = 'camera-modal';
+        
+        // Camera header
+        const cameraHeader = document.createElement('div');
+        cameraHeader.className = 'camera-header';
+        
+        const cameraTitle = document.createElement('h3');
+        cameraTitle.textContent = 'Kamera';
+        cameraTitle.className = 'camera-title';
+        
+        const cameraClose = document.createElement('button');
+        cameraClose.className = 'camera-close';
+        cameraClose.innerHTML = '✕';
+        cameraClose.addEventListener('click', closeCameraModal);
+        
+        cameraHeader.appendChild(cameraTitle);
+        cameraHeader.appendChild(cameraClose);
+        
+        // Camera content
+        const cameraContent = document.createElement('div');
+        cameraContent.className = 'camera-content';
+        
+        const video = document.createElement('video');
+        video.className = 'camera-video';
+        video.autoplay = true;
+        video.muted = true;
+        video.playsinline = true; // Important for iOS
+        
+        const canvas = document.createElement('canvas');
+        canvas.className = 'camera-canvas';
+        canvas.style.display = 'none';
+        
+        // Camera controls
+        const cameraControls = document.createElement('div');
+        cameraControls.className = 'camera-controls';
+        
+        const captureButton = document.createElement('button');
+        captureButton.className = 'camera-capture';
+        captureButton.addEventListener('click', capturePhoto);
+        
+        const switchButton = document.createElement('button');
+        switchButton.className = 'camera-switch';
+        switchButton.innerHTML = '🔄';
+        switchButton.addEventListener('click', switchCamera);
+        
+        cameraControls.appendChild(switchButton);
+        cameraControls.appendChild(captureButton);
+        
+        cameraContent.appendChild(video);
+        cameraContent.appendChild(canvas);
+        cameraContent.appendChild(cameraControls);
+        
+        cameraModal.appendChild(cameraHeader);
+        cameraModal.appendChild(cameraContent);
+        cameraOverlay.appendChild(cameraModal);
+        document.body.appendChild(cameraOverlay);
+        
+        // Camera state
+        let currentStream = null;
+        let currentFacingMode = 'user'; // 'user' for front camera, 'environment' for back camera
+        
+        // Start camera
+        async function startCamera(facingMode = 'user') {
+            try {
+                // Stop existing stream
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Camera constraints - optimized for cross-platform compatibility
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1280, max: 1920 },
+                        height: { ideal: 720, max: 1080 }
+                    },
+                    audio: false
+                };
+                
+                // For older devices, fallback to basic constraints
+                let stream;
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (err) {
+                    console.warn('Failed with advanced constraints, trying basic:', err);
+                    // Fallback for older devices
+                    const basicConstraints = {
+                        video: true,
+                        audio: false
+                    };
+                    stream = await navigator.mediaDevices.getUserMedia(basicConstraints);
+                }
+                
+                currentStream = stream;
+                video.srcObject = stream;
+                
+                // Show camera modal with animation
+                setTimeout(() => {
+                    cameraOverlay.classList.add('active');
+                }, 10);
+                
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                let errorMessage = 'Nepodařilo se získat přístup ke kameře.';
+                
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    errorMessage = 'Přístup ke kameře byl odmítnut. Povolte přístup v nastavení prohlížeče.';
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    errorMessage = 'Kamera nebyla nalezena.';
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    errorMessage = 'Kamera je již používána jinou aplikací.';
+                }
+                
+                alert(errorMessage);
+                closeCameraModal();
+            }
+        }
+        
+        // Switch between front and back camera
+        async function switchCamera() {
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            await startCamera(currentFacingMode);
+        }
+        
+        // Capture photo
+        function capturePhoto() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw video frame to canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert canvas to blob
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    // Create file from blob
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                    const file = new File([blob], `camera-${timestamp}.jpg`, { 
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    
+                    // Add preview URL for immediate display
+                    file.previewUrl = URL.createObjectURL(blob);
+                    
+                    // Display the captured photo
+                    displayUploadedFiles([file], true);
+                    
+                    // Close camera modal
+                    closeCameraModal();
+                }
+            }, 'image/jpeg', 0.9); // 90% quality
+        }
+        
+        // Close camera modal
+        function closeCameraModal() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            cameraOverlay.classList.remove('active');
+            setTimeout(() => {
+                if (document.body.contains(cameraOverlay)) {
+                    document.body.removeChild(cameraOverlay);
+                }
+            }, 300);
+        }
+        
+        // Handle escape key
+        function handleKeyPress(e) {
+            if (e.key === 'Escape') {
+                closeCameraModal();
+            }
+        }
+        
+        document.addEventListener('keydown', handleKeyPress);
+        
+        // Remove event listener when modal is closed
+        cameraOverlay.addEventListener('transitionend', () => {
+            if (!cameraOverlay.classList.contains('active')) {
+                document.removeEventListener('keydown', handleKeyPress);
+            }
+        });
+        
+        // Start the camera
+        startCamera(currentFacingMode);
+    }
 }
 
 

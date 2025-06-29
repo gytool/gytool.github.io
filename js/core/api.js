@@ -395,11 +395,6 @@ function createModelSettingsModal(headerSettings, onSave) {
                 customContainer.style.display = 'none';
             }
 
-            // Dropdown components
-            const selectLabel = document.createElement('label');
-            selectLabel.textContent = 'Model:';
-            selectLabel.htmlFor = 'model-select';
-            selectLabel.className = 'settings-label';
 
             const select = document.createElement('select');
             select.id = 'model-select';
@@ -433,14 +428,7 @@ function createModelSettingsModal(headerSettings, onSave) {
                 select.appendChild(option);
             });
 
-            selectContainer.appendChild(selectLabel);
             selectContainer.appendChild(select);
-            
-            // Custom model input components
-            const customLabel = document.createElement('label');
-            customLabel.textContent = 'Vlastní model:';
-            customLabel.htmlFor = 'custom-model-input';
-            customLabel.className = 'settings-label';
 
             const customInputContainer = document.createElement('div');
             customInputContainer.className = 'api-input-container';
@@ -450,14 +438,13 @@ function createModelSettingsModal(headerSettings, onSave) {
             customInput.id = 'custom-model-input';
             customInput.className = 'api-input';
             customInput.placeholder = 'např. openai/gpt-4o';
-            
-            // Set value if it's a custom model
-            if (isCustomModel) {
-                customInput.value = OPENROUTER_MODEL.substring(7); // Remove 'custom:' prefix
+            customInput.autocomplete = 'off';
+
+				if (isCustomModel) {
+                customInput.value = OPENROUTER_MODEL.substring(7);
             }
             
             customInputContainer.appendChild(customInput);
-            customContainer.appendChild(customLabel);
             customContainer.appendChild(customInputContainer);
             
             form.appendChild(selectContainer);

@@ -569,3 +569,36 @@
 .file-popup-close:hover {
     color: #333;
 }
+
+.space-file-upload + .message-container {
+    margin-top: 0.5rem;
+}
+
+.message-container + .space-file-upload {
+    margin-top: 0.5rem;
+}
+
+.space-file-upload-block {
+    margin-bottom: 0;
+}
+
+.space-file-grid .file-image-container {
+	position: relative;
+	border-radius: 6px;
+	overflow: hidden;
+	aspect-ratio: 1;
+	background-color: #f0f0f0;
+}
+
+.space-file-grid .file-more-indicator {
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.space-file-grid .file-more-indicator span {
+	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+}

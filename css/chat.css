@@ -253,3 +253,151 @@
 .welcome-tutorial-icon {
   pointer-events: auto;
 }
+
+/* File uploads in message containers */
+.message-container .space-file-upload {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.message-container .space-file-upload + .space-request {
+    margin-top: 0;
+}
+
+.message-container .space-request + .space-response {
+    margin-top: 1rem;
+}
+
+.message-container .space-file-upload + .space-response {
+    margin-top: 1rem;
+}
+
+/* Ensure consistent spacing in message containers */
+.message-container {
+    margin-bottom: 1rem;
+}
+
+.message-container:last-child {
+    margin-bottom: 0;
+}
+
+/* File uploads in chat - separate from text requests */
+.space-file-upload {
+    opacity: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    margin-top: 0;
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.space-file-upload-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    width: auto;
+    max-width: 75%;
+    height: auto;
+    margin-right: 1rem;
+    margin-left: 0.75rem;
+    word-break: break-word;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.space-file-upload-block .uploaded-image {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 8px;
+}
+
+.space-file-upload-block .file-attachment {
+    width: 100%;
+    padding: 12px;
+    background-color: transparent;
+    border: none;
+}
+
+.space-file-upload-block .file-attachment-icon {
+    width: 1.2rem;
+    margin-right: 12px;
+}
+
+.space-file-upload-block .file-attachment-name {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.space-file-upload-block .file-attachment-size {
+    font-size: 0.85rem;
+    color: #666;
+    margin-left: 12px;
+}
+
+/* Multiple files grid in upload block */
+.space-file-grid {
+    display: grid;
+    gap: 8px;
+    padding: 8px;
+    width: 100%;
+}
+
+.space-file-grid.grid-1 {
+    grid-template-columns: 1fr;
+}
+
+.space-file-grid.grid-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.space-file-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.space-file-grid.grid-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.space-file-grid .uploaded-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 0;
+}
+
+.space-file-grid .file-attachment {
+    padding: 8px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.space-file-grid .file-image-container {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background-color: #f0f0f0;
+}
+
+.space-file-grid .file-more-indicator {
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.space-file-grid .file-more-indicator span {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}

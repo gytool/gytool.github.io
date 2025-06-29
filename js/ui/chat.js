@@ -338,8 +338,17 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
     const messageContainer = document.createElement('div');
     messageContainer.classList.add('message-container');
     
-    const newRequestElement = createRequestMessageElement(userMessage);
-    messageContainer.appendChild(newRequestElement);
+    // Add files first if they exist
+    if (attachedFiles && attachedFiles.length > 0) {
+        const fileUploadElement = createFileUploadElement(attachedFiles);
+        messageContainer.appendChild(fileUploadElement);
+    }
+    
+    // Add text request if there's a message
+    if (userMessage && userMessage.trim()) {
+        const newRequestElement = createRequestMessageElement(userMessage);
+        messageContainer.appendChild(newRequestElement);
+    }
     
     chatInput.value = '';
 
@@ -443,7 +452,7 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
                 messageSpace.scrollTop = messageSpace.scrollHeight;
             },
             conversationHistory,
-            attachedFiles // Pass attached files to API
+            attachedFiles
         );
         
         console.log("Creating final response with length:", rawMarkdownContent.length);
@@ -494,4 +503,84 @@ export async function handleChatSubmission(chatForm, chatInput, messageSpace, se
         sendButton.disabled = chatInput.value.trim() === '';
         sendButton.removeEventListener('click', stopHandler);
     }
+}
+
+// Add new function to create file upload element
+function createFileUploadElement(files) {
+    const uploadContainer = document.createElement('div');
+    uploadContainer.className = 'space-file-upload';
+    
+    const fileBlock = document.createElement('div');
+    fileBlock.className = 'space-file-upload-block';
+    
+    // Check if we have images for grid layout
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    const otherFiles = files.filter(file => !file.type.startsWith('image/'));
+    
+    // Handle image files with grid layout
+    if (imageFiles.length > 0) {
+        const imageGrid = document.createElement('div');
+        imageGrid.className = `space-file-grid grid-${Math.min(imageFiles.length, 4)}`;
+        
+        imageFiles.slice(0, 4).forEach((file, index) => {
+            if (index === 3 && imageFiles.length > 4) {
+                // Show "+X more" for additional images
+                const moreContainer = document.createElement('div');
+                moreContainer.className = 'file-image-container file-more-indicator';
+                
+                const moreSpan = document.createElement('span');
+                moreSpan.textContent = `+${imageFiles.length - 3}`;
+                moreContainer.appendChild(moreSpan);
+                
+                imageGrid.appendChild(moreContainer);
+            } else {
+                const chatImg = document.createElement('img');
+                chatImg.className = 'uploaded-image';
+                chatImg.alt = file.name;
+                
+                let imgSrc = file.previewUrl || URL.createObjectURL(file);
+                chatImg.src = imgSrc;
+                
+                imageGrid.appendChild(chatImg);
+            }
+        });
+        
+        fileBlock.appendChild(imageGrid);
+    }
+    
+    // Handle non-image files
+    if (otherFiles.length > 0) {
+        otherFiles.forEach(file => {
+            const chatFileInfo = document.createElement('div');
+            chatFileInfo.className = 'file-attachment';
+            
+            const chatFileIcon = document.createElement('img');
+            chatFileIcon.src = './assets/vectors/file.svg';
+            chatFileIcon.alt = 'File';
+            chatFileIcon.className = 'file-attachment-icon';
+            
+            const chatFileName = document.createElement('span');
+            chatFileName.textContent = file.name;
+            chatFileName.className = 'file-attachment-name';
+            
+            const chatFileSize = document.createElement('span');
+            chatFileSize.textContent = formatFileSize(file.size);
+            chatFileSize.className = 'file-attachment-size';
+            
+            chatFileInfo.appendChild(chatFileIcon);
+            chatFileInfo.appendChild(chatFileName);
+            chatFileInfo.appendChild(chatFileSize);
+            fileBlock.appendChild(chatFileInfo);
+        });
+    }
+    
+    uploadContainer.appendChild(fileBlock);
+    return uploadContainer;
+}
+
+// Add formatFileSize function if not already present
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
 }

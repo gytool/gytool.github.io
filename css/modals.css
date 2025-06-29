@@ -405,3 +405,206 @@
    background-color: #fff;
    border: 1px solid #fff;
 }
+
+/* Camera modal styles */
+.camera-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.camera-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.camera-modal {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.camera-overlay.active .camera-modal {
+    transform: scale(1);
+}
+
+.camera-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+}
+
+.camera-title {
+    color: white;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.camera-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.camera-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.camera-content {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.camera-video {
+	position: relative;
+	top: -1px;
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.camera-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: white;
+}
+
+.camera-capture {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+    border: 4px solid white;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(43, 125, 180, 0.3);
+    padding: 0;
+    line-height: 1;
+}
+
+.camera-capture::before {
+    content: "📷";
+    position: relative;
+    top: -2px;
+}
+
+.camera-capture:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(43, 125, 180, 0.4);
+}
+
+.camera-capture:active {
+    transform: scale(0.95);
+}
+
+.camera-switch {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ddd;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.camera-switch:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.camera-switch:active {
+    transform: scale(0.95);
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+    .camera-modal {
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .camera-video {
+        max-height: 50vh;
+    }
+    
+    .camera-controls {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    
+    .camera-capture {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8rem;
+    }
+    
+    .camera-switch {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-appearance: none) {
+    .camera-video {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+}
