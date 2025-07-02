@@ -24,6 +24,12 @@ import {
 } from './ui/modals.js';
 
 import {
+	createChatHistoryModal,
+	startNewChat,
+	saveCurrentChatIfNeeded
+} from './ui/chat-history.js';
+
+import {
 	setupCodeBlockHandlers
 } from './utils/syntax.js';
 
@@ -31,115 +37,101 @@ import { clearHistory } from './core/history.js';
 import { SpeechRecognitionManager } from './utils/speech.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-	const chatForm = document.getElementById('chat-form');
-	const chatInput = document.getElementById('chat-input');
-	const messageSpace = document.getElementById('message-space');
-	const sendButton = document.querySelector('.panel-block[type="submit"]');
-	const headerNew = document.querySelector('.header-new');
-	const headerApi = document.querySelector('.header-api');
-	const headerModel = document.querySelector('.header-model');
-	const plusButton = document.querySelector('.panel-more').closest('.panel-block');
-	
-	
-	window.pendingUploads = [];
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const messageSpace = document.getElementById('message-space');
+    const sendButton = document.querySelector('.panel-block[type="submit"]');
+    const headerNew = document.querySelector('.header-new');
+    const headerApi = document.querySelector('.header-api');
+    const headerModel = document.querySelector('.header-model');
+    const headerHistory = document.querySelector('.header-history'); // Burger icon
+    const plusButton = document.querySelector('.panel-more').closest('.panel-block');
+    
+    
+    window.pendingUploads = [];
 
-	if (!chatForm) {
-		 return;
-	}
+    if (!chatForm) {
+         return;
+    }
 
-	createApiKeyModal(headerApi);
-	createModelSettingsModal(headerModel);
-	updateWelcomeScreen(messageSpace);
-	setupCodeBlockHandlers();
-	
-	
-	setupPlusMenu(plusButton);
-	
-	const voiceIconHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
-	const sendIconHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
-	
-	chatForm.addEventListener('submit', async (event) => {
-		 event.preventDefault();
-		 
-		 
-		 await handleCombinedSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
-	});
+    createApiKeyModal(headerApi);
+    createModelSettingsModal(headerModel);
+    updateWelcomeScreen(messageSpace);
+    setupCodeBlockHandlers();
+    
+    
+    setupPlusMenu(plusButton);
+    
+    const voiceIconHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+    const sendIconHTML = `<img loading="eager" src="./assets/vectors/send.svg" alt="Send" class='panel-send'>`;
+    
+    chatForm.addEventListener('submit', async (event) => {
+         event.preventDefault();
+         
+         // Save current chat before sending new message
+         saveCurrentChatIfNeeded();
+         
+         await handleCombinedSubmission(chatForm, chatInput, messageSpace, sendButton, sendIconHTML);
+    });
 
-	if (chatInput && sendButton) {
-		 chatInput.addEventListener('input', () => {
-			  const isEmpty = chatInput.value.trim() === '';
-			  sendButton.disabled = isEmpty;
-			  sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
-		 });
-		 
-		 // Handle voice button click when input is empty
-		 sendButton.addEventListener('click', (e) => {
-			  if (chatInput.value.trim() === '' && sendButton.innerHTML.includes('voice.svg')) {
-					e.preventDefault();
-					e.stopPropagation();
-					openSpeechModal();
-			  }
-		 });
-		 
-		 
-		 const isEmpty = chatInput.value.trim() === '';
-		 sendButton.disabled = isEmpty;
-		 sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
-	}
+    if (chatInput && sendButton) {
+         chatInput.addEventListener('input', () => {
+              const isEmpty = chatInput.value.trim() === '';
+              sendButton.disabled = isEmpty;
+              sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
+         });
+         
+         // Handle voice button click when input is empty
+         sendButton.addEventListener('click', (e) => {
+              if (chatInput.value.trim() === '' && sendButton.innerHTML.includes('voice.svg')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openSpeechModal();
+              }
+         });
+         
+         
+         const isEmpty = chatInput.value.trim() === '';
+         sendButton.disabled = isEmpty;
+         sendButton.innerHTML = isEmpty ? voiceIconHTML : sendIconHTML;
+    }
 
-	if (chatInput) {
-		 chatInput.addEventListener('keydown', function (e) {
-			  if (e.key === 'Enter' && e.shiftKey) {
-					e.preventDefault();
-					const cursorPos = this.selectionStart;
-					this.value =
-						 this.value.substring(0, cursorPos) +
-						 '\n' +
-						 this.value.substring(cursorPos);
-					this.selectionStart = this.selectionEnd = cursorPos + 1;
-					return false;
-			  }
-		 });
-	}
+    if (chatInput) {
+         chatInput.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' && e.shiftKey) {
+                    e.preventDefault();
+                    const cursorPos = this.selectionStart;
+                    this.value =
+                         this.value.substring(0, cursorPos) +
+                         '\n' +
+                         this.value.substring(cursorPos);
+                    this.selectionStart = this.selectionEnd = cursorPos + 1;
+                    return false;
+              }
+         });
+    }
 
-	if (headerNew && messageSpace) {
-		 headerNew.addEventListener('click', () => {
-			  
-			  while (messageSpace.firstChild) {
-					messageSpace.removeChild(messageSpace.firstChild);
-			  }
-			  
-			  
-			  clearHistory();
-			  
-			  
-			  window.pendingUploads = [];
-			  
-			  
-			  const uploadedContainer = document.querySelector('.uploaded-container');
-			  if (uploadedContainer) {
-					uploadedContainer.classList.remove('active');
-					setTimeout(() => {
-						 if (uploadedContainer.parentNode) {
-							  uploadedContainer.parentNode.removeChild(uploadedContainer);
-						 }
-					}, 200);
-			  }
-			  
-			  
-			  updateWelcomeScreen(messageSpace);
+    // Chat history functionality (burger icon)
+    if (headerHistory) {
+        headerHistory.addEventListener('click', () => {
+            createChatHistoryModal();
+        });
+    }
 
-			  if (chatInput) {
-					chatInput.value = '';
-					chatInput.focus();
-			  }
+    if (headerNew && messageSpace) {
+         headerNew.addEventListener('click', () => {
+              startNewChat();
 
-			  if (sendButton) {
-					sendButton.disabled = true;
-					sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
-			  }
-		 });
-	}
+              if (chatInput) {
+                    chatInput.focus();
+              }
+
+              if (sendButton) {
+                    sendButton.disabled = true;
+                    sendButton.innerHTML = `<img loading="eager" src="./assets/vectors/voice.svg" alt="Voice" class='panel-send'>`;
+              }
+         });
+    }
 });
 
 
@@ -445,11 +437,26 @@ function setupPlusMenu(plusButton) {
         
         const captureButton = document.createElement('button');
         captureButton.className = 'camera-capture';
+		  captureButton.innerHTML = `
+		  	<svg xmlns="http://www.w3.org/2000/svg" width="40" height="36" viewBox="0 0 40 36" fill="none">
+				<path d="M20 29C22.5 29 24.6253 28.1253 26.376 26.376C28.1267 24.6267 29.0013 22.5013 29 20C28.9987 17.4987 28.124 15.374 26.376 13.626C24.628 11.878 22.5027 11.0027 20 11C17.4973 10.9973 15.3727 11.8727 13.626 13.626C11.8793 15.3793 11.004 17.504 11 20C10.996 22.496 11.8713 24.6213 13.626 26.376C15.3807 28.1307 17.5053 29.0053 20 29ZM20 25C18.6 25 17.4167 24.5167 16.45 23.55C15.4833 22.5833 15 21.4 15 20C15 18.6 15.4833 17.4167 16.45 16.45C17.4167 15.4833 18.6 15 20 15C21.4 15 22.5833 15.4833 23.55 16.45C24.5167 17.4167 25 18.6 25 20C25 21.4 24.5167 22.5833 23.55 23.55C22.5833 24.5167 21.4 25 20 25ZM4 36C2.9 36 1.95867 35.6087 1.176 34.826C0.393333 34.0433 0.00133333 33.1013 0 32V8C0 6.9 0.392 5.95867 1.176 5.176C1.96 4.39333 2.90133 4.00133 4 4H10.3L12.8 1.3C13.1667 0.9 13.6087 0.583333 14.126 0.35C14.6433 0.116667 15.1847 0 15.75 0H24.25C24.8167 0 25.3587 0.116667 25.876 0.35C26.3933 0.583333 26.8347 0.9 27.2 1.3L29.7 4H36C37.1 4 38.042 4.392 38.826 5.176C39.61 5.96 40.0013 6.90133 40 8V32C40 33.1 39.6087 34.042 38.826 34.826C38.0433 35.61 37.1013 36.0013 36 36H4ZM4 32H36V8H27.9L24.25 4H15.75L12.1 8H4V32Z" fill="white"/>
+			</svg>
+		  `;
         captureButton.addEventListener('click', capturePhoto);
         
         const switchButton = document.createElement('button');
         switchButton.className = 'camera-switch';
-        switchButton.innerHTML = '🔄';
+        switchButton.innerHTML = `
+		  	<svg xmlns="http://www.w3.org/2000/svg" width="45" height="42" viewBox="0 0 45 42" fill="none">
+				<path d="M8.35312 15.9961C9.075 13.9523 10.2469 12.0305 11.8969 10.3898C17.7562 4.53047 27.2531 4.53047 33.1125 10.3898L34.7156 12.0023H31.5C29.8406 12.0023 28.5 13.343 28.5 15.0023C28.5 16.6617 29.8406 18.0023 31.5 18.0023H41.9906C43.65 18.0023 44.9906 16.6617 44.9906 15.0023V4.50234C44.9906 2.84297 43.65 1.50234 41.9906 1.50234C40.3312 1.50234 38.9906 2.84297 38.9906 4.50234V7.80234L37.35 6.15234C29.1469 -2.05078 15.8531 -2.05078 7.65 6.15234C5.3625 8.43984 3.7125 11.1305 2.7 14.0086C2.14687 15.5742 2.97188 17.2805 4.52813 17.8336C6.08438 18.3867 7.8 17.5617 8.35312 16.0055V15.9961ZM2.15625 24.1242C1.6875 24.2648 1.2375 24.518 0.871875 24.893C0.496875 25.268 0.24375 25.718 0.1125 26.2055C0.0843751 26.318 0.05625 26.4398 0.0375 26.5617C0.00937496 26.7211 0 26.8805 0 27.0398V37.5023C0 39.1617 1.34062 40.5023 3 40.5023C4.65938 40.5023 6 39.1617 6 37.5023V34.2117L7.65 35.8523C15.8531 44.0461 29.1469 44.0461 37.3406 35.8523C39.6281 33.5648 41.2875 30.8742 42.3 27.9961C42.8531 26.4305 42.0281 24.7242 40.4719 24.1711C38.9156 23.618 37.2 24.443 36.6469 25.9992C35.925 28.043 34.7531 29.9648 33.1031 31.6055C27.2438 37.4648 17.7469 37.4648 11.8875 31.6055L11.8781 31.5961L10.275 30.0023H13.5C15.1594 30.0023 16.5 28.6617 16.5 27.0023C16.5 25.343 15.1594 24.0023 13.5 24.0023H3.0375C2.8875 24.0023 2.7375 24.0117 2.5875 24.0305C2.3625 24.0586 2.29688 24.0773 2.15625 24.1242Z" fill="url(#paint0_linear_853_3)"/>
+				<defs>
+					<linearGradient id="paint0_linear_853_3" x1="52.6951" y1="-12.6181" x2="4.91581" y2="7.37638" gradientUnits="userSpaceOnUse">
+						<stop stop-color="#013B6C"/>
+						<stop offset="1" stop-color="#2B7DB4"/>
+					</linearGradient>
+				</defs>
+			</svg>
+		`;
         switchButton.addEventListener('click', switchCamera);
         
         cameraControls.appendChild(switchButton);

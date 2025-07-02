@@ -227,6 +227,8 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	white-space: nowrap;
+
 }
 
 .welcome-tutorial-block {
@@ -238,16 +240,16 @@
 	cursor: pointer;
 	pointer-events: auto;
 	animation: fadeIn 0.3s ease-out 0.2s forwards;
-	transition: transform 0.2s ease;
 }
 
 .welcome-tutorial-text {
-  background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 500;
-  pointer-events: auto;
+	background: linear-gradient(249deg, #013B6C -20.75%, #2B7DB4 68.99%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	font-weight: 500;
+	pointer-events: auto;
+	white-space: nowrap;
 }
 
 .welcome-tutorial-icon {

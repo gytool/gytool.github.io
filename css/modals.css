@@ -359,12 +359,16 @@
     color: white;
     border: none;
     border-radius: 20px;
-    padding: 8px 25px;
+    padding: 12px 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
     transition: opacity 0.2s ease;
+}
+
+.tutorial-nav-button > * {
+	width: 1rem;
 }
 
 .tutorial-nav-button:hover {
@@ -533,10 +537,8 @@
     line-height: 1;
 }
 
-.camera-capture::before {
-    content: "📷";
-    position: relative;
-    top: -2px;
+.camera-capture > * {
+	 width: 1.4rem;
 }
 
 .camera-capture:hover {
@@ -560,6 +562,10 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+}
+
+.camera-switch > * {
+	 width: 1.4rem;
 }
 
 .camera-switch:hover {
@@ -805,5 +811,184 @@
     
     .speech-microphone {
         font-size: 2.5rem;
+    }
+}
+
+/* Chat History Sidebar */
+.chat-history-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.chat-history-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.chat-history-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 2501;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-history-overlay.active .chat-history-sidebar {
+    transform: translateX(0);
+}
+
+.chat-history-header {
+    padding: 1.5rem 1rem 1rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-history-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.chat-history-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.chat-history-close:hover {
+    background-color: #e9ecef;
+}
+
+.chat-history-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.chat-history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chat-history-item {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.chat-history-item:hover {
+    background-color: #f8f9fa;
+}
+
+.chat-history-item.active {
+    background-color: #e3f2fd;
+    border-right: 3px solid #2B7DB4;
+}
+
+.chat-history-preview {
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-history-date {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.chat-history-actions {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chat-history-item:hover .chat-history-actions {
+    opacity: 1;
+}
+
+.chat-history-delete {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    transition: background-color 0.2s ease;
+}
+
+.chat-history-delete:hover {
+    background-color: #ffe6e6;
+}
+
+.chat-history-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.chat-history-footer {
+    padding: 1rem;
+    border-top: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+.chat-history-clear-all {
+    width: 100%;
+    padding: 0.75rem;
+    background: none;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.chat-history-clear-all:hover {
+    background: #dc3545;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .chat-history-sidebar {
+        width: 85%;
+        max-width: 300px;
     }
 }
