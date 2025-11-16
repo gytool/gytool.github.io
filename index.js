@@ -28,7 +28,7 @@ const classes = {
 	'Pošli to dál! Jak se informovalo v době revoluce': 'A365',
 	'Debata s pamětnicí Květou Princovou': 'A160',
 	'Svědectví Dagmar Přidalové a co si z toho vzít dnes': 'B264',
-	'Beseda s politoložkou Danielou Ostrou': 'AUF',
+	'Beseda s politoložkou Danielou Ostrou': 'A466',
 	'Revoluce v Olomouci & propojení se současností': 'A364',
 	'Beseda s pamětníkem Ivanem Langerem': 'A261',
 	'Beseda s pamětníky olomouckého Sametu 1989': 'A361',
