@@ -261,7 +261,8 @@ body {
 	gap: 1rem;
 }
 
-.program__button {
+.program__button,
+.program__button-voluntary {
 	display: flex;
 	align-self: flex-start;
 	align-items: center;
@@ -289,18 +290,21 @@ body {
 	transition: all 0.2s ease-in-out;
 }
 
-.program__button:disabled {
+.program__button:disabled,
+.program__button-voluntary:disabled {
 	border: 2px solid var(--neutral-color);
 	color: var(--neutral-color);
 	background-color: var(--light-color);
 }
 
-.program__button:disabled > svg {
+.program__button:disabled > svg,
+.program__button-voluntary:disabled > svg {
 	width: 1.2rem;
 	margin-right: 0.75rem;
 }
 
-.program__button:disabled > svg path {
+.program__button:disabled > svg path,
+.program__button-voluntary:disabled > svg path {
 	fill: var(--neutral-color);
 }
 
@@ -661,13 +665,16 @@ body {
 		margin-bottom: 1.5rem;
 	}
 
-	.program__button {
+	.program__button,
+	.program__button-voluntary {
 		padding: 1rem 1.5rem;
 		font-size: 1.5rem;
 		border-radius: 15px;
 	}
 
-	.program__button > svg {
+	.program__button > svg,
+	.program__button-voluntary > svg {
+		width: 2rem;
 		width: 1.5rem;
 	}
 

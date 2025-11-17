@@ -38,8 +38,6 @@ const classes = {
 	'Přichází zelená sametová revoluce': 'A266',
 	'Sametová revoluce v Olomouci z pohledu tehdejšího studenta': 'A265',
 	'Jak jsem zažil revoluci (střípky vzpomínek na r. 1989)': 'B188',
-	'Promítání snímku Prezidentka s následnou debatou (Pátek 14:00)': 'Pátek 14:00',
-	'Beseda a vernisáž s Petrem Zatloukalem (Čtvrtek 14:00)': 'Velká hudebna',
 };
 
 let selectedPrograms = [];
