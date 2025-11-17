@@ -290,10 +290,15 @@ body {
 	transition: all 0.2s ease-in-out;
 }
 
-.program__button:disabled,
-.program__button-voluntary:disabled {
+.program__button:disabled {
 	border: 2px solid var(--neutral-color);
 	color: var(--neutral-color);
+	background-color: var(--light-color);
+}
+
+.program__button-voluntary:disabled {
+	border: 2px solid var(--green-color);
+	color: var(--green-color);
 	background-color: var(--light-color);
 }
 
@@ -303,10 +308,15 @@ body {
 	margin-right: 0.75rem;
 }
 
-.program__button:disabled > svg path,
-.program__button-voluntary:disabled > svg path {
+.program__button:disabled > svg path {
 	fill: var(--neutral-color);
 }
+
+.program__button-voluntary:disabled > svg path {
+	fill: var(--green-color);
+}
+
+
 
 .program__capacity {
 	align-self: flex-start;
