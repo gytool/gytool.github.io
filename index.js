@@ -9,7 +9,7 @@ const PERMANENTLY_DISABLED_PROGRAMS = [
 
 const classes = {
 	'Jak to bylo roku 1989 na Hejčíně': 'A168',
-	'Vzpomínky na Sametovou revoluci v Olomouci': 'B280',
+	'Dost sentimentu - co rozkládalo stát tehdy i dnes? Korupce': 'B280',
 	'Hledání pravdy a svobody. Jak se jako středoškolský student dostal do Polska a mezi disidenty, československou opozici': 'B381',
 	'Hledání pravdy a svobody. Rok 1989 ve fotografiích Oty Nepilého – Polsko, východní Německo, Československo, Rumunsko': 'B381',
 	'Společnost a ekonomika 1948-1989': 'B190',
@@ -598,7 +598,7 @@ function updateConfirmationButton() {
 						}
 					} catch (error) {
 						console.error('Error submitting data:', error);
-						confirmButton.textContent = 'Chyba! Zkuste to znovu.';
+						confirmButton.textContent = 'Zkuste to prosím znovu za minutu';
 						confirmButton.style.backgroundColor = 'var(--red-color)';
 						confirmButton.disabled = false;
 						
