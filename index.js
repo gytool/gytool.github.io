@@ -3,6 +3,9 @@
 const targetDate = new Date('2025-11-18T18:00:00+01:00');
 const registrationEndDate = new Date('2025-11-20T15:00:00+01:00');
 const GOOGLE_SHEET_API = 'https://script.google.com/macros/s/AKfycbwK_fssu-l7fY8SRiETnE4C3E-6CtNikYXN4pGCBltaWcEh5Dn1ZdZeh5umV00dzFjH/exec';
+const PERMANENTLY_DISABLED_PROGRAMS = [
+	'Vzpomínky na Sametovou revoluci v Olomouci'
+];
 
 const classes = {
 	'Jak to bylo roku 1989 na Hejčíně': 'A168',
@@ -28,7 +31,7 @@ const classes = {
 	'Pošli to dál! Jak se informovalo v době revoluce': 'A365',
 	'Debata s pamětnicí Květou Princovou': 'A160',
 	'Svědectví Dagmar Přidalové a co si z toho vzít dnes': 'B264',
-	'Beseda s politoložkou Danielou Ostrou': 'A466',
+	'Víc než jen volby: každodenní rozhodnutí, která formují demokracii': 'A466',
 	'Revoluce v Olomouci & propojení se současností': 'A364',
 	'Beseda s pamětníkem Ivanem Langerem': 'A261',
 	'Beseda s pamětníky olomouckého Sametu 1989': 'A361',
@@ -44,6 +47,11 @@ let selectedPrograms = [];
 let capacityLoaded = false;
 
 // Helper Functions
+
+function isProgramPermanentlyDisabled(programDiv) {
+	const programTitle = programDiv.querySelector('.program__title > span')?.textContent.trim();
+	return PERMANENTLY_DISABLED_PROGRAMS.includes(programTitle);
+}
 
 function getProgramBlocks(programDiv) {
 	const capacityDiv = programDiv.querySelector('.program__capacity');
@@ -225,6 +233,20 @@ function updateProgramButtons() {
 		const capacityDiv = button.closest('.program__buttons').querySelector('.program__capacity');
 		const capacityText = capacityDiv?.textContent.trim();
 		
+		if (isProgramPermanentlyDisabled(programDiv)) {
+			button.disabled = true;
+			button.textContent = 'Zrušeno';
+			button.style.border = '2px solid var(--neutral-color)';
+			button.style.color = 'var(--neutral-color)';
+			button.style.backgroundColor = 'var(--light-color)';
+			
+			const svg = button.querySelector('svg');
+			if (svg) {
+					svg.querySelector('path').style.fill = 'var(--red-color)';
+			}
+			return;
+		}
+
 		let isFull = false;
 		
 		if (capacityText.includes('SPOJENÉ')) {
@@ -315,6 +337,10 @@ document.querySelectorAll('.program__button').forEach((button, index) => {
 		const programType = getProgramBlocks(programDiv);
 		const isSelected = selectedPrograms.includes(programIndex);
 		
+		if (isProgramPermanentlyDisabled(programDiv)) {
+			return;
+		}
+
 		if (isSelected) {
 				selectedPrograms = selectedPrograms.filter(i => i !== programIndex);
 				button.style.border = '2px solid var(--dark-color)';
@@ -830,6 +856,24 @@ window.addEventListener('DOMContentLoaded', () => {
 	const hasSubmitted = localStorage.getItem('hasSubmittedPrograms');
 	const isTeacher = localStorage.getItem('isTeacher') === 'true';
 	
+	document.querySelectorAll('.programs__program').forEach((programDiv) => {
+		if (isProgramPermanentlyDisabled(programDiv)) {
+				const button = programDiv.querySelector('.program__button');
+				if (button) {
+					button.disabled = true;
+					button.textContent = 'Zrušeno';
+					button.style.border = '2px solid var(--neutral-color)';
+					button.style.color = 'var(--neutral-color)';
+					button.style.backgroundColor = 'var(--light-color)';
+					
+					const svg = button.querySelector('svg');
+					if (svg) {
+						svg.querySelector('path').style.fill = 'var(--neutral-color)';
+					}
+				}
+		}
+	});
+
 	document.querySelectorAll('.program__description').forEach(description => {
 		description.style.display = 'none';
 	});
