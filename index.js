@@ -2,7 +2,8 @@
 
 const targetDate = new Date('2025-11-18T18:00:00+01:00');
 const registrationEndDate = new Date('2025-11-20T15:00:00+01:00');
-const GOOGLE_SHEET_API = 'https://script.google.com/macros/s/AKfycbwK_fssu-l7fY8SRiETnE4C3E-6CtNikYXN4pGCBltaWcEh5Dn1ZdZeh5umV00dzFjH/exec';
+const GOOGLE_SHEET_API = 'https://script.google.com/macros/s/AKfycbxRYhswZOU_MQ0-vQsXjFGVGXiIcbA67uTKt--xqruR9Vt75oHz0CntEFvuandl2EM8/exec';
+
 const PERMANENTLY_DISABLED_PROGRAMS = [
 	'Vzpomínky na Sametovou revoluci v Olomouci'
 ];
@@ -549,69 +550,72 @@ function updateConfirmationButton() {
 				}
 				
 				confirmButton.addEventListener('click', async () => {
-					try {
-						const hasSubmitted = localStorage.getItem('hasSubmittedPrograms');
-						if (hasSubmitted === 'true') {
-								confirmButton.textContent = 'Již odesláno!';
-								confirmButton.style.backgroundColor = 'var(--neutral-color)';
-								confirmButton.disabled = true;
-								return;
-						}
-						
-						const name = localStorage.getItem('userName');
-						const className = localStorage.getItem('userClass');
-						
-						confirmButton.disabled = true;
-						confirmButton.textContent = 'Odesílání...';
-						
-						const url = `${GOOGLE_SHEET_API}?name=${encodeURIComponent(name)}&class=${encodeURIComponent(className)}&firstProgram=${encodeURIComponent(firstProgram)}&secondProgram=${encodeURIComponent(secondProgram)}`;
-						
-						const res = await fetch(url, {
-								method: "GET",
-								redirect: "follow"
-						});
-						
-						const result = await res.json();
-						
-						if (result.status === "success") {
-								localStorage.setItem('hasSubmittedPrograms', 'true');
-								localStorage.setItem('firstProgramSubmitted', firstProgram);
-								localStorage.setItem('secondProgramSubmitted', secondProgram);
-								
-								confirmButton.textContent = 'Úspěšně odesláno!';
-								confirmButton.style.backgroundColor = 'var(--green-color)';
-								
-								document.querySelectorAll('.program__button').forEach(btn => {
-									btn.disabled = true;
-								});
-								
-								displaySelectedPrograms(firstProgram, secondProgram);
-								
-								await fetchCapacityFromSheet();
-								
-								setTimeout(() => {
-									window.location.hash = '#reg';
-									confirmContainer.remove();
-								}, 2000);
-						} else {
-								throw new Error('Failed to save data');
-						}
-					} catch (error) {
-						console.error('Error submitting data:', error);
-						confirmButton.textContent = 'Zkuste to prosím znovu za minutu';
-						confirmButton.style.backgroundColor = 'var(--red-color)';
-						confirmButton.disabled = false;
-						
-						setTimeout(() => {
-								if (firstProgram === secondProgram) {
-									confirmButton.innerHTML = `${firstProgram} (SPOJENÉ)<br>Potvrdit?`;
-								} else {
-									confirmButton.innerHTML = `Blok 1: ${firstProgram}<br>Blok 2: ${secondProgram}<br>Potvrdit?`;
-								}
-								confirmButton.style.backgroundColor = 'var(--green-color)';
-						}, 3000);
+		try {
+			const hasSubmitted = localStorage.getItem('hasSubmittedPrograms');
+			if (hasSubmitted === 'true') {
+					confirmButton.textContent = 'Již odesláno!';
+					confirmButton.style.backgroundColor = 'var(--neutral-color)';
+					confirmButton.disabled = true;
+					return;
+			}
+			
+			const name = localStorage.getItem('userName');
+			const className = localStorage.getItem('userClass');
+			
+			confirmButton.disabled = true;
+			confirmButton.textContent = 'Odesílání...';
+			
+			const url = `${GOOGLE_SHEET_API}?name=${encodeURIComponent(name)}&class=${encodeURIComponent(className)}&firstProgram=${encodeURIComponent(firstProgram)}&secondProgram=${encodeURIComponent(secondProgram)}`;
+			
+			const res = await fetch(url, {
+					method: "GET",
+					redirect: "follow"
+			});
+			
+			const result = await res.json();
+			
+			if (result.status === "success") {
+					localStorage.setItem('hasSubmittedPrograms', 'true');
+					localStorage.setItem('firstProgramSubmitted', firstProgram);
+					localStorage.setItem('secondProgramSubmitted', secondProgram);
+					
+					confirmButton.textContent = 'Úspěšně odesláno!';
+					confirmButton.style.backgroundColor = 'var(--green-color)';
+					
+					document.querySelectorAll('.program__button').forEach(btn => {
+						btn.disabled = true;
+					});
+					
+					displaySelectedPrograms(firstProgram, secondProgram);
+					
+					await fetchCapacityFromSheet();
+					
+					setTimeout(() => {
+						window.location.hash = '#reg';
+						confirmContainer.remove();
+					}, 2000);
+			} else {
+					throw new Error(result.message || 'Failed to save data');
+			}
+		} catch (error) {
+			console.error('Error submitting data:', error);
+			confirmButton.textContent = error.message || 'Zkuste to prosím znovu za minutu';
+			confirmButton.style.backgroundColor = 'var(--red-color)';
+			confirmButton.disabled = false;
+			
+			// Refresh capacity to show updated numbers
+			await fetchCapacityFromSheet();
+			
+			setTimeout(() => {
+					if (firstProgram === secondProgram) {
+						confirmButton.innerHTML = `${firstProgram} (SPOJENÉ)<br>Potvrdit?`;
+					} else {
+						confirmButton.innerHTML = `Blok 1: ${firstProgram}<br>Blok 2: ${secondProgram}<br>Potvrdit?`;
 					}
-				});
+					confirmButton.style.backgroundColor = 'var(--green-color)';
+			}, 3000);
+		}
+	});
 				
 				confirmContainer.appendChild(backButton);
 				confirmContainer.appendChild(confirmButton);
