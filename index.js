@@ -1,7 +1,7 @@
 // Constants and Configuration
 
 const targetDate = new Date('2025-11-18T18:00:00+01:00');
-const registrationEndDate = new Date('2025-11-20T18:00:00+01:00');
+const registrationEndDate = new Date('2025-11-20T22:00:00+01:00');
 const GOOGLE_SHEET_API = 'https://script.google.com/macros/s/AKfycbxRYhswZOU_MQ0-vQsXjFGVGXiIcbA67uTKt--xqruR9Vt75oHz0CntEFvuandl2EM8/exec';
 
 const PERMANENTLY_DISABLED_PROGRAMS = [
